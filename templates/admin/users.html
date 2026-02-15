@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+
+{% block title %}Kelola Pengguna - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .content-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .search-box {
+        max-width: 300px;
+        width: 100%;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 10px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 0.9rem;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    /* User Card */
+    .user-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .user-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .user-card.inactive {
+        opacity: 0.6;
+        background: #f9fafb;
+    }
+
+    .user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), #a855f7);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .user-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .user-email {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .user-role {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .role-admin { background: #fee2e2; color: #991b1b; }
+    .role-developer { background: #e0e7ff; color: #4f46e5; }
+    .role-user { background: #d1fae5; color: #065f46; }
+
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-inactive {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .delete-request-badge {
+        background: #fef3c7;
+        color: #d97706;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .user-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .btn-action {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-action:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-action.danger {
+        border-color: #fecaca;
+    }
+
+    .btn-action.danger:hover {
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #dc2626;
+    }
+
+    .btn-activate {
+        background: #d1fae5;
+        color: #065f46;
+        border-color: #a7f3d0;
+    }
+
+    .btn-activate:hover {
+        background: #a7f3d0;
+        border-color: #059669;
+    }
+
+    .btn-deactivate {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+
+    .btn-deactivate:hover {
+        background: #fecaca;
+        border-color: #dc2626;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 16px;
+    }
+
+    .empty-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    .empty-text {
+        color: var(--text-muted);
+    }
+    .filter-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .filter-btn { padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--bg-white); color:var(--text-main); text-decoration:none; font-weight:600; }
+    .filter-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Admin Content -->
+    <div class="admin-content">
+        
+        <!-- Header -->
+        <div class="content-header">
+            <h1>Kelola Pengguna</h1>
+            <div class="search-box">
+                <input type="text" placeholder="Cari pengguna...">
+            </div>
+        </div>
+
+        {% if users %}
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <a href="{{ url_for('admin_users', role='all') }}" class="filter-btn {% if role_filter == 'all' %}active{% endif %}">Semua ({{ counts.all }})</a>
+            <a href="{{ url_for('admin_users', role='user') }}" class="filter-btn {% if role_filter == 'user' %}active{% endif %}">User ({{ counts.user }})</a>
+            <a href="{{ url_for('admin_users', role='developer') }}" class="filter-btn {% if role_filter == 'developer' %}active{% endif %}">Developer ({{ counts.developer }})</a>
+            <a href="{{ url_for('admin_users', role='admin') }}" class="filter-btn {% if role_filter == 'admin' %}active{% endif %}">Admin ({{ counts.admin }})</a>
+        </div>
+        <!-- Users List -->
+        <div style="display: grid; gap: 12px;">
+            {% for user in users %}
+            <div id="user-{{ user.id }}" class="user-card {% if not user.is_active %}inactive{% endif %}">
+                <div class="user-avatar">
+                    {% if user.profile_photo %}
+                        <img src="{{ url_for('static', filename='uploads/profiles/' + user.profile_photo) }}" alt="{{ user.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <span style="display: none;">{{ user.username[0]|upper }}</span>
+                    {% else %}
+                        {{ user.username[0]|upper }}
+                    {% endif %}
+                </div>
+                <div class="user-info">
+                    <div class="user-name">
+                        {{ user.username }}
+                        {% if user.delete_requested %}
+                        <span class="delete-request-badge" title="Meminta penghapusan akun">
+                            <i class="bi bi-exclamation-triangle"></i> Minta Hapus
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="user-email">{{ user.email }}</div>
+                </div>
+                <span class="user-role role-{{ user.role }}">{{ user.role|title }}</span>
+                <span class="status-badge {% if user.is_active %}status-active{% else %}status-inactive{% endif %}">
+                    <i class="bi bi-{% if user.is_active %}check-circle-fill{% else %}x-circle-fill{% endif %}"></i>
+                    {% if user.is_active %}Aktif{% else %}Nonaktif{% endif %}
+                </span>
+                <div class="user-actions">
+                    {% if user.role != 'admin' %}
+                    <!-- Toggle Active/Inactive Button -->
+                    {% if user.is_active %}
+                    <form method="POST" action="{{ url_for('admin_user_toggle', user_id=user.id) }}" style="display: inline;">
+                        <button type="submit" class="btn-action btn-deactivate" onclick="return confirm('Nonaktifkan pengguna ini?')" title="Nonaktifkan">
+                            <i class="bi bi-x-circle"></i> Nonaktif
+                        </button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('admin_user_toggle', user_id=user.id) }}" style="display: inline;">
+                        <button type="submit" class="btn-action btn-activate" onclick="return confirm('Aktifkan pengguna ini?')" title="Aktifkan">
+                            <i class="bi bi-check-circle"></i> Aktifkan
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    <!-- Delete Button - ONLY shown if user requested account deletion -->
+                    {% if user.delete_requested %}
+                    <a href="{{ url_for('admin_account_deletion_requests') }}" class="btn-action danger" title="Lihat request penghapusan">
+                        <i class="bi bi-trash"></i> Hapus
+                    </a>
+                    {% endif %}
+                    {% endif %}
+
+                    <!-- Three-dot menu -->
+                    <div class="more-menu" style="position:relative;">
+                        <button class="btn-action more-btn" aria-expanded="false" title="Lainnya">⋯</button>
+                        <div class="more-dropdown" style="display:none; position:absolute; right:0; top:36px; background:var(--bg-white); border:1px solid var(--border); border-radius:8px; min-width:180px; box-shadow:var(--shadow-sm); z-index:50;">
+                            <a href="{{ url_for('admin_edit_user', user_id=user.id) }}" class="btn-action" style="display:block; width:100%; text-align:left; padding:10px 12px; border:none; background:transparent;">Edit</a>
+                            <a href="{{ url_for('admin_edit_user', user_id=user.id) }}" class="btn-action" style="display:block; width:100%; text-align:left; padding:10px 12px; border:none; background:transparent;">Detail User</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">👥</div>
+            <h3 class="empty-title">Tidak Ada Pengguna</h3>
+            <p class="empty-text">Belum ada pengguna yang terdaftar.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+    {% block extra_js %}
+    <script>
+    // Dropdown for three-dot menus
+    document.addEventListener('click', function(e){
+        // Toggle menu
+        if(e.target.closest('.more-btn')){
+            const btn = e.target.closest('.more-btn');
+            const menu = btn.parentElement.querySelector('.more-dropdown');
+            const isOpen = menu.style.display !== 'none';
+            // close other open menus
+            document.querySelectorAll('.more-dropdown').forEach(d=>d.style.display='none');
+            menu.style.display = isOpen ? 'none' : 'block';
+            return;
+        }
+        // close when clicking outside
+        if(!e.target.closest('.more-menu')){
+            document.querySelectorAll('.more-dropdown').forEach(d=>d.style.display='none');
+        }
+    });
+    </script>
+    {% endblock %}

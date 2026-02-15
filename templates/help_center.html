@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}Pusat Bantuan - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .help-wrapper {
+        min-height: calc(100vh - 68px - 100px);
+        padding: 40px 20px;
+        background: var(--bg-body);
+    }
+
+    .help-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: var(--shadow-sm);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .help-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .help-header i {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 16px;
+    }
+
+    .help-header h2 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 8px;
+    }
+
+    .help-header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .help-section {
+        margin-bottom: 32px;
+    }
+
+    .help-section h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: var(--text-main);
+    }
+
+    .issue-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .issue-list li {
+        padding: 12px 16px;
+        background: var(--bg-body);
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .issue-list li i {
+        color: var(--primary);
+        margin-right: 8px;
+    }
+
+    .contact-info {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 24px;
+    }
+
+    .contact-info h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #0369a1;
+    }
+
+    .contact-info p {
+        font-size: 0.9rem;
+        color: #075985;
+        margin-bottom: 8px;
+    }
+
+    .contact-info a {
+        color: #0284c7;
+        font-weight: 500;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-control, .form-select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn-submit {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+    }
+
+    .btn-submit:hover {
+        background: var(--primary-hover);
+    }
+
+    .help-note {
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 16px;
+    }
+
+    .help-note i {
+        color: var(--primary);
+        margin-right: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="help-wrapper">
+    <div class="help-card">
+        <div class="help-header">
+            <i class="bi bi-headset"></i>
+            <h2>Pusat Bantuan</h2>
+            <p>Hubungi kami jika Anda mengalami masalah dengan akun</p>
+        </div>
+
+        <!-- Jenis Layanan -->
+        <div class="help-section">
+            <h3>Layanan yang Tersedia</h3>
+            <ul class="issue-list">
+                <li><i class="bi bi-check-circle"></i> Akun dinonaktifkan - Permohonan pengaktifan ulang</li>
+                <li><i class="bi bi-check-circle"></i> Masalah login - Lupa password atau username</li>
+                <li><i class="bi bi-check-circle"></i> Masalah verifikasi akun</li>
+                <li><i class="bi bi-check-circle"></i> Permohonan penghapusan akun</li>
+                <li><i class="bi bi-check-circle"></i> Kendala teknis aplikasi</li>
+                <li><i class="bi bi-check-circle"></i> Pertanyaan umum lainnya</li>
+            </ul>
+        </div>
+
+        <!-- Form Kontak -->
+        <div class="help-section">
+            <h3>Kirim Pesan</h3>
+            <form method="POST" action="{{ url_for('submit_help_request') }}">
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" name="name" class="form-control" placeholder="Masukkan nama lengkap Anda" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="Masukkan email yang dapat dihubungi" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Jenis Masalah</label>
+                    <select name="issue_type" class="form-select" required>
+                        <option value="">Pilih jenis masalah...</option>
+                        <option value="akun_nonaktif">Akun Dinonaktifkan</option>
+                        <option value="aktivasi_ulang">Permohonan Aktivasi Ulang</option>
+                        <option value="lupa_password">Lupa Password</option>
+                        <option value="lupa_username">Lupa Username</option>
+                        <option value="verifikasi">Masalah Verifikasi Akun</option>
+                        <option value="hapus_akun">Permohonan Hapus Akun</option>
+                        <option value="kendala_teknis">Kendala Teknis</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Pesan</label>
+                    <textarea name="message" class="form-control" placeholder="Jelaskan masalah Anda secara detail..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-send me-2"></i> Kirim Pesan
+                </button>
+            </form>
+
+            <p class="help-note">
+                <i class="bi bi-clock"></i> Tim kami akan merespons dalam 24-48 jam kerja
+            </p>
+        </div>
+
+        <!-- Info Kontak Langsung -->
+        <div class="contact-info">
+            <h4><i class="bi bi-envelope me-2"></i>Hubungi Langsung</h4>
+            <p>Untuk pertanyaan mendesak, Anda dapat menghubungi kami langsung melalui:</p>
+            <p><strong>Email:</strong> <a href="mailto:haisen.bussines@gmail.com">haisen.bussines@gmail.com</a></p>
+            <p style="margin-bottom: 0;"><strong>Jam Operasional:</strong> Senin - Jumat, 09:00 - 17:00 WIB</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

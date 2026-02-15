@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- Breadcrumb --- */
+    .breadcrumb-item a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    .breadcrumb-item.active {
+        color: var(--text-main);
+        font-weight: 500;
+    }
+
+    /* --- Category Header --- */
+    .category-header h1 {
+        font-size: 2.25rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+        color: var(--text-main);
+    }
+
+    .category-desc {
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        max-width: 700px;
+        line-height: 1.6;
+    }
+
+    /* --- Grid Item Hover --- */
+    .app-card {
+        transition: all 0.2s ease;
+    }
+    
+    /* Rating Text Helper */
+    .rating-text {
+        color: #F59E0B; /* Amber-500 */
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mt-4 mb-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Beranda</a></li>
+            <li class="breadcrumb-item active">{{ category.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="category-header mb-5">
+        <h1>{{ category.name }}</h1>
+        {% if category.description %}
+        <p class="category-desc">{{ category.description }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Apps Grid (Clean Layout) -->
+    <div class="row g-4">
+        {% if apps %}
+            {% for app in apps %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{{ url_for('app_detail', app_id=app.id) }}" class="text-decoration-none text-reset">
+                    <div class="app-card h-100">
+                        {% if app.icon %}
+                        <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}" class="app-icon">
+                        {% else %}
+                        <div class="app-icon bg-light d-flex align-items-center justify-content-center text-muted">
+                            <i class="bi bi-app fs-1"></i>
+                        </div>
+                        {% endif %}
+                        
+                        <h6 class="app-title">{{ app.title }}</h6>
+                        <p class="app-developer">{{ app.developer or 'Developer' }}</p>
+                        
+                        <div class="d-flex align-items-center justify-content-between mt-auto">
+                            <div class="rating-text">
+                                <i class="bi bi-star-fill"></i> {{ app.rating }}
+                            </div>
+                            <span class="badge bg-light text-dark border" style="font-size: 0.8rem;">
+                                {{ app.price }}
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+        
+        <!-- Empty State (Refined) -->
+        <div class="col-12">
+            <div class="text-center py-5 rounded-3" style="background: var(--bg-white); border: 1px dashed var(--border);">
+                <div style="margin-bottom: 16px;">
+                    <i class="bi bi-folder2-open" style="font-size: 3rem; color: #D1D5DB;"></i>
+                </div>
+                <h4 class="fw-bold mb-3" style="color: var(--text-main);">Belum ada aplikasi</h4>
+                <p class="text-muted mb-4" style="max-width: 400px; margin-left: auto; margin-right: auto;">
+                    Kategori ini masih kosong. Aplikasi akan muncul di sini setelah ditambahkan oleh developer.
+                </p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="bi bi-house me-2"></i> Kembali ke Beranda
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

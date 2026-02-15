@@ -1,0 +1,350 @@
+{# Developer Sidebar Template #}
+{# Note: This file should be included in developer pages using: include 'developer/sidebar.html' #}
+
+<style>
+    /* Developer Sidebar Styles */
+    .developer-sidebar {
+        width: 280px;
+        height: 100vh;
+        background-color: #ffffff;
+        border-right: 1px solid #dadce0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        z-index: 1050;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        border-bottom: 1px solid #dadce0;
+        flex-shrink: 0;
+    }
+
+    .sidebar-header a {
+        font-family: 'Google Sans', sans-serif;
+        font-weight: 500;
+        color: #202124;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.25rem;
+    }
+
+    .sidebar-header i {
+        color: var(--primary);
+        font-size: 1.4rem;
+    }
+
+    /* Mobile Toggle Button */
+    .sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 1060;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: #ffffff;
+        border: 1px solid #dadce0;
+        color: #5f6368;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-toggle:hover {
+        background: #f1f3f4;
+        color: #202124;
+    }
+
+    .sidebar-nav {
+        flex-grow: 1;
+        padding: 12px 0;
+        overflow-y: auto;
+    }
+
+    .dev-nav-link {
+        display: flex;
+        align-items: center;
+        padding: 14px 24px;
+        margin: 4px 16px;
+        color: #5f6368;
+        text-decoration: none;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        gap: 14px;
+    }
+
+    .dev-nav-link i {
+        font-size: 1.2rem;
+        color: #5f6368;
+        width: 24px;
+        text-align: center;
+    }
+
+    .dev-nav-link:hover {
+        background-color: #f1f3f4;
+        color: #202124;
+    }
+
+    .dev-nav-link:hover i {
+        color: #202124;
+    }
+
+    .dev-nav-link.active {
+        background-color: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .dev-nav-link.active i {
+        color: var(--primary);
+        font-weight: bold;
+    }
+
+    .sidebar-divider {
+        height: 1px;
+        background-color: #dadce0;
+        margin: 12px 24px;
+    }
+
+    /* Profile Section in Sidebar */
+    .sidebar-profile {
+        padding: 16px 24px;
+        border-top: 1px solid #dadce0;
+        background-color: #fafafa;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .sidebar-profile-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .sidebar-profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .sidebar-profile-avatar .initials {
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .sidebar-profile-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .sidebar-profile-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #202124;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-profile-role {
+        font-size: 0.75rem;
+        color: #5f6368;
+    }
+
+    .sidebar-footer {
+        padding: 20px 24px;
+        border-top: 1px solid #dadce0;
+        background-color: #fafafa;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .sidebar-footer a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #5f6368;
+        font-size: 0.9rem;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 10px 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .sidebar-footer a:hover {
+        background-color: #f1f3f4;
+        color: #202124;
+    }
+
+    .sidebar-footer a.logout-link {
+        color: #ea4335;
+    }
+
+    .sidebar-footer a.logout-link:hover {
+        color: #c5221f;
+    }
+
+    .sidebar-stats {
+        padding: 12px 24px;
+    }
+
+    .sidebar-stats-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #5f6368;
+        margin-bottom: 8px;
+    }
+
+    .sidebar-stats-value {
+        font-size: 0.85rem;
+        color: #202124;
+    }
+
+    /* Overlay for mobile */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1040;
+    }
+
+    @media (max-width: 991px) {
+        .sidebar-toggle {
+            display: flex;
+        }
+        
+        .developer-sidebar {
+            transform: translateX(-100%);
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+        }
+        
+        .developer-sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+    }
+</style>
+
+<!-- Mobile Toggle Button -->
+<button class="sidebar-toggle" onclick="toggleDeveloperSidebar()">
+    <i class="bi bi-list"></i>
+</button>
+
+<!-- Overlay for mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleDeveloperSidebar()"></div>
+
+<!-- Sidebar Start -->
+<div class="developer-sidebar" id="developerSidebar">
+    <div class="sidebar-header">
+        <a href="{{ url_for('index') }}">
+            <i class="bi bi-cloud-fill"></i>
+            <span>Developer Console</span>
+        </a>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a class="dev-nav-link {% if request.endpoint == 'developer_dashboard' %}active{% endif %}" href="{{ url_for('developer_dashboard') }}">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        
+        <a class="dev-nav-link {% if request.endpoint == 'developer_apps' %}active{% endif %}" href="{{ url_for('developer_apps') }}">
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+            <span>Aplikasi Saya</span>
+        </a>
+        
+        <a class="dev-nav-link {% if request.endpoint == 'developer_app_add' or request.endpoint == 'developer_app_edit' %}active{% endif %}" href="{{ url_for('developer_app_add') }}">
+            <i class="bi bi-cloud-upload-fill"></i>
+            <span>Upload Aplikasi</span>
+        </a>
+        
+        <a class="dev-nav-link {% if request.endpoint == 'developer_history' %}active{% endif %}" href="{{ url_for('developer_history') }}">
+            <i class="bi bi-clock-history"></i>
+            <span>Riwayat</span>
+        </a>
+
+        <div class="sidebar-divider"></div>
+        
+        <div class="sidebar-stats">
+            <div class="sidebar-stats-label">Statistik Cepat</div>
+            {% if current_user.is_authenticated %}
+            <div class="sidebar-stats-value">
+                <i class="bi bi-app"></i> {{ current_user.apps|length }} Aplikasi
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    {% if current_user.is_authenticated %}
+    <div class="sidebar-profile">
+        <div class="sidebar-profile-avatar">
+            {% if current_user.profile_photo %}
+                <img src="{{ url_for('static', filename='uploads/profiles/' + current_user.profile_photo) }}" alt="{{ current_user.username }}">
+            {% else %}
+                <span class="initials">{{ current_user.username[0]|upper }}</span>
+            {% endif %}
+        </div>
+        <div class="sidebar-profile-info">
+            <div class="sidebar-profile-name">{{ current_user.username }}</div>
+            <div class="sidebar-profile-role">Developer</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="sidebar-footer">
+        <a href="{{ url_for('profile') }}">
+            <i class="bi bi-person"></i>
+            <span>Profil</span>
+        </a>
+        <a href="{{ url_for('index') }}">
+            <i class="bi bi-arrow-bar-left"></i>
+            <span>Kembali ke Website</span>
+        </a>
+        <a href="{{ url_for('logout') }}" class="logout-link" style="margin-top: 12px;">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</div>
+
+<script>
+    function toggleDeveloperSidebar() {
+        const sidebar = document.getElementById('developerSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+    }
+</script>

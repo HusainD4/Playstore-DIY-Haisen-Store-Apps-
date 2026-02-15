@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}Kelola Review - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .content-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .review-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .review-card:hover {
+        box-shadow: var(--shadow-sm);
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+
+    .review-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .review-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .review-rating {
+        color: #fbbc04;
+        font-size: 1rem;
+    }
+
+    .review-content {
+        color: var(--text-main);
+        line-height: 1.6;
+    }
+
+    .review-app {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+    }
+
+    .review-actions {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .btn-delete {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid #fee2e2;
+        background: #fef2f2;
+        color: #dc2626;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-delete:hover {
+        background: #fee2e2;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Admin Content -->
+    <div class="admin-content">
+        
+        <!-- Header -->
+        <div class="content-header">
+            <h1>Kelola Review</h1>
+        </div>
+
+        {% if reviews %}
+        <!-- Reviews List -->
+        <div>
+            {% for review in reviews %}
+            <div id="review-{{ review.id }}" class="review-card">
+                <div class="review-header">
+                    <div class="review-user">
+                        <div class="user-avatar">
+                            {% if review.user.profile_photo %}
+                                <img src="{{ url_for('static', filename='uploads/profiles/' + review.user.profile_photo) }}" alt="{{ review.user.username }}">
+                            {% else %}
+                                {{ review.user.username[0]|upper }}
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="user-name">{{ review.user.username }}</div>
+                            <div class="review-date">{{ review.created_at.strftime('%d %B %Y') if review.created_at else '-' }}</div>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        {% for i in range(5) %}
+                            <i class="bi bi-star{% if i < review.rating %}-fill{% endif %}"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="review-content">{{ review.comment }}</div>
+                {% if review.admin_reply %}
+                <div style="margin-top:10px; background:#f3f4f6; padding:12px; border-radius:8px; border:1px solid var(--border);">
+                    <strong>Balasan Admin:</strong>
+                    <div style="margin-top:6px;">{{ review.admin_reply }}</div>
+                </div>
+                {% endif %}
+                {% if review.app %}
+                <div class="review-app">
+                    <i class="bi bi-app"></i> Untuk aplikasi: {{ review.app.title }}
+                </div>
+                {% endif %}
+                <div class="review-actions">
+                    <!-- Three-dot menu for review -->
+                    <div class="more-menu" style="position:relative; margin-right:8px;">
+                        <button class="btn-action more-btn" aria-expanded="false" title="Lainnya">⋯</button>
+                        <div class="more-dropdown" style="display:none; position:absolute; right:0; top:36px; background:var(--bg-white); border:1px solid var(--border); border-radius:8px; min-width:180px; box-shadow:var(--shadow-sm); z-index:50;">
+                            <a href="{{ url_for('admin_edit_review', review_id=review.id) }}" class="btn-action" style="display:block; width:100%; text-align:left; padding:10px 12px; border:none; background:transparent;">Edit</a>
+                            <a href="{{ url_for('admin_edit_review', review_id=review.id) }}" class="btn-action" style="display:block; width:100%; text-align:left; padding:10px 12px; border:none; background:transparent;">Balas Komentar</a>
+                        </div>
+                    </div>
+                    <form method="POST" action="{{ url_for('admin_delete_review', review_id=review.id) }}" onsubmit="return confirm('Hapus review ini?');" style="display:inline;">
+                        <button type="submit" class="btn-delete">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <h3>Tidak Ada Review</h3>
+            <p class="text-muted">Belum ada review dari pengguna.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+    {% block extra_js %}
+    <script>
+    // Dropdown for three-dot menus in reviews
+    document.addEventListener('click', function(e){
+        if(e.target.closest('.more-btn')){
+            const btn = e.target.closest('.more-btn');
+            const menu = btn.parentElement.querySelector('.more-dropdown');
+            const isOpen = menu.style.display !== 'none';
+            document.querySelectorAll('.more-dropdown').forEach(d=>d.style.display='none');
+            menu.style.display = isOpen ? 'none' : 'block';
+            return;
+        }
+        if(!e.target.closest('.more-menu')){
+            document.querySelectorAll('.more-dropdown').forEach(d=>d.style.display='none');
+        }
+    });
+    </script>
+    {% endblock %}

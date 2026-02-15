@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}Haisen Official - Platform Digital{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- Page Specific Styles --- */
+    .hero-section {
+        padding: 80px 0;
+        margin-bottom: 60px;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--text-main);
+        margin-bottom: 24px;
+    }
+
+    .hero-desc {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 32px;
+        max-width: 500px;
+    }
+
+    .hero-image {
+        width: 100%;
+        max-width: 450px;
+        filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1));
+        transform: rotate(-5deg);
+        transition: transform 0.3s;
+    }
+    .hero-image:hover { transform: rotate(0deg) scale(1.02); }
+
+    /* Category Cards */
+    .category-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        transition: all 0.2s ease;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .category-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transform: translateY(-3px);
+    }
+
+    .category-icon {
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 16px;
+        background: var(--primary-light);
+        color: var(--primary);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .category-title {
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
+
+    /* Popular List Item */
+    .popular-item {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s;
+        cursor: pointer;
+        margin-bottom: 12px;
+    }
+
+    .popular-item:hover {
+        border-color: #D1D5DB;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .app-list-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        object-fit: cover;
+        margin-right: 20px;
+        display: block;
+        max-width: 100%;
+    }
+
+    /* CTA Section */
+    .cta-card {
+        background: linear-gradient(135deg, #F6523F 0%, #FF8A75 100%);
+        border-radius: 16px;
+        padding: 60px 20px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 10px 25px rgba(246, 82, 63, 0.3);
+    }
+
+    .cta-card h2 { color: white; font-weight: 700; margin-bottom: 16px; }
+    .cta-card p { color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-bottom: 32px; }
+    .btn-light-custom {
+        background: white;
+        color: var(--primary);
+        font-weight: 600;
+        padding: 12px 30px;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .btn-light-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* Rating Badge */
+    .rating-badge {
+        background: #FEF3C7;
+        color: #D97706;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="hero-title">Platform Aplikasi & Game Modern.</h1>
+                <p class="hero-desc">
+                    Akses ribuan aplikasi produktivitas dan hiburan dalam satu tempat yang aman, cepat, dan terpercaya.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="#categories" class="btn btn-primary">
+                        Jelajahi Sekarang
+                    </a>
+                    <a href="{{ url_for('developers') }}" class="btn btn-outline">
+                        <i class="bi bi-people"></i> Developer
+                    </a>
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('register') }}" class="btn btn-outline">
+                        Daftar Gratis
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                <!-- Placeholder illustration -->
+                <img src="static\logo\logo.png" alt="Hero" class="hero-image img-fluid">
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Apps -->
+    {% if featured_apps %}
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0 fs-4">
+                <i class="bi bi-star-fill text-warning me-2"></i> Aplikasi Pilihan
+            </h2>
+        </div>
+        
+        <div class="row g-3">
+            {% for app in featured_apps %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{{ url_for('app_detail', app_id=app.id) }}" class="text-decoration-none">
+                    <div class="app-card">
+                        {% if app.icon %}
+                        <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}" class="app-icon">
+                        {% else %}
+                        <div class="app-icon bg-light d-flex align-items-center justify-content-center">
+                            <i class="bi bi-app fs-1 text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <h6 class="app-title">{{ app.title }}</h6>
+                        <p class="app-developer">{{ app.developer or 'Developer' }}</p>
+                        <div class="d-flex align-items-center justify-content-between mt-auto">
+                            <span class="rating-badge"><i class="bi bi-star-fill me-1"></i> {{ app.rating }}</span>
+                            <span class="text-muted fw-bold" style="font-size: 0.85rem;">{{ app.price }}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Popular Apps -->
+    {% if popular_apps %}
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0 fs-4">
+                <i class="bi bi-fire text-danger me-2"></i> Paling Populer
+            </h2>
+            <a href="{{ url_for('seluruh_aplikasi_populer') }}" class="text-decoration-none fw-medium" style="color: var(--primary);">
+                Lihat semua <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+        
+        <div class="row">
+            {% for app in popular_apps %}
+            <div class="col-12">
+                <a href="{{ url_for('app_detail', app_id=app.id) }}" class="text-decoration-none">
+                    <div class="popular-item">
+                        {% if app.icon %}
+                        <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}" class="app-list-icon">
+                        {% else %}
+                        <div class="app-list-icon bg-light d-flex align-items-center justify-content-center">
+                            <i class="bi bi-app fs-1 text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1" style="color: var(--text-main);">{{ app.title }}</h6>
+                            <small class="text-muted d-block">{{ app.developer or 'Developer' }}</small>
+                            <span class="badge bg-light text-dark border mt-1 d-inline-block" style="font-size: 0.75rem;">
+                                {{ app.category.name if app.category else 'Umum' }}
+                            </span>
+                        </div>
+                        <div class="text-end ps-3">
+                            <span class="fw-bold d-block mb-1" style="color: var(--primary);">{{ app.price }}</span>
+                            <small class="text-muted">
+                                <i class="bi bi-download me-1"></i> {{ app.downloads }}
+                            </small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recent Apps -->
+    {% if recent_apps %}
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0 fs-4">
+                <i class="bi bi-clock-history text-primary me-2"></i> Baru Rilis
+            </h2>
+        </div>
+        
+        <div class="row g-3">
+            {% for app in recent_apps %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{{ url_for('app_detail', app_id=app.id) }}" class="text-decoration-none">
+                    <div class="app-card">
+                        {% if app.icon %}
+                        <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}" class="app-icon">
+                        {% else %}
+                        <div class="app-icon bg-light d-flex align-items-center justify-content-center">
+                            <i class="bi bi-app fs-1 text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <h6 class="app-title">{{ app.title }}</h6>
+                        <p class="app-developer">{{ app.developer or 'Developer' }}</p>
+                        <div class="d-flex align-items-center justify-content-between mt-auto">
+                            <span class="text-muted" style="font-size: 0.75rem;">{{ app.size or '-' }}</span>
+                            <span class="text-muted fw-bold" style="font-size: 0.85rem;">{{ app.price }}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- CTA Section -->
+    <section class="mb-5">
+        <div class="cta-card">
+            <h2 class="display-6">Mulai Sekarang</h2>
+            <p>Bergabunglah dengan komunitas pengembang dan pengguna Haisen Official.</p>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('register') }}" class="btn btn-light-custom">
+                Daftar Gratis
+            </a>
+            {% else %}
+            <a href="#categories" class="btn btn-light-custom">
+                Jelajahi Sekarang
+            </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section id="categories" class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0 fs-4">Kategori</h2>
+            <a href="{{ url_for('seluruh_kategori') }}" class="text-decoration-none fw-medium" style="color: var(--primary);">
+                Lihat semua <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+        
+        <div class="row g-2">
+            {% for category in categories %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <a href="{{ url_for('category', category_id=category.id) }}" class="text-decoration-none">
+                    <div class="category-card">
+                        <div class="category-icon">
+                            {% if category.icon == 'file-digital' %}
+                            <i class="bi bi-file-earmark-arrow-down"></i>
+                            {% elif category.icon == 'app' %}
+                            <i class="bi bi-app"></i>
+                            {% elif category.icon == 'gamepad-2' %}
+                            <i class="bi bi-controller"></i>
+                            {% elif category.icon == 'file-text' %}
+                            <i class="bi bi-file-text"></i>
+                            {% elif category.icon == 'image' %}
+                            <i class="bi bi-image"></i>
+                            {% else %}
+                            <i class="bi bi-folder"></i>
+                            {% endif %}
+                        </div>
+                        <h6 class="category-title">{{ category.name }}</h6>
+                        <small class="text-muted" style="font-size: 0.8rem;">{{ category.apps|length }} aplikasi</small>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}

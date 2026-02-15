@@ -1,0 +1,496 @@
+{% extends 'base.html' %}
+
+{% block title %}Kelola Maintenance - Admin Dashboard - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Admin Dashboard Additional Styles */
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .header-title h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
+
+    .header-title p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    /* Section Card */
+    .section-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-head h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-head i {
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+
+    /* Maintenance Route Card */
+    .maintenance-route-item {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .maintenance-route-item:hover {
+        border-color: var(--primary);
+        background: #f3f4f6;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.1);
+    }
+
+    .route-info {
+        flex: 1;
+    }
+
+    .route-name {
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+
+    .route-path {
+        font-size: 0.85rem;
+        color: #6b7280;
+        font-family: 'Courier New', monospace;
+        background: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 4px;
+    }
+
+    .route-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Toggle Switch */
+    .toggle-checkbox {
+        appearance: none;
+        width: 50px;
+        height: 28px;
+        background: #d1d5db;
+        border-radius: 14px;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.3s;
+        border: none;
+        outline: none;
+    }
+
+    .toggle-checkbox:checked {
+        background: #ef4444;
+    }
+
+    .toggle-checkbox::after {
+        content: '';
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: left 0.3s;
+    }
+
+    .toggle-checkbox:checked::after {
+        left: 24px;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-maintenance {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .message-input {
+        display: none;
+        margin-top: 12px;
+        width: 100%;
+    }
+
+    .message-input.show {
+        display: block;
+    }
+
+    .message-input textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        resize: vertical;
+        min-height: 80px;
+        box-sizing: border-box;
+    }
+
+    .save-message-btn {
+        margin-top: 8px;
+        padding: 8px 16px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: background 0.3s;
+    }
+
+    .save-message-btn:hover {
+        background: var(--primary-hover);
+    }
+
+    /* Grid layout for routes */
+    .routes-grid {
+        display: grid;
+        gap: 12px;
+    }
+
+    /* Info banner */
+    .info-banner {
+        background: #eff6ff;
+        border-left: 4px solid #3b82f6;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+    }
+
+    .info-banner p {
+        margin: 0;
+        color: #1e40af;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .info-banner strong {
+        color: #1e3a8a;
+    }
+
+    /* Loading state */
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #e5e7eb;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Success message */
+    .success-tooltip {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slideInRight 0.3s ease-out;
+        z-index: 1000;
+    }
+
+    @keyframes slideInRight {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Main Content -->
+    <div class="admin-content">
+        
+        <!-- Page Header -->
+        <div class="content-header">
+            <div class="header-title">
+                <h1>Kelola Maintenance</h1>
+                <p>Pilih halaman yang ingin dimaintenance dan atur pesan pemeliharaan.</p>
+            </div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+                <i class="bi bi-arrow-left me-2"></i> Kembali
+            </a>
+        </div>
+
+        <!-- Info Banner -->
+        <div class="info-banner">
+            <p>
+                <strong>ℹ️ Informasi:</strong> Ketika Anda mengaktifkan maintenance untuk sebuah halaman, semua pengguna (kecuali admin) 
+                yang mencoba mengakses halaman tersebut akan diarahkan ke halaman maintenance. 
+                Anda dapat menyesuaikan pesan yang ditampilkan untuk setiap halaman.
+            </p>
+        </div>
+
+        <!-- Maintenance Routes Section -->
+        <div class="section-card">
+            <div class="section-head">
+                <h2>
+                    <i class="bi bi-tools"></i>
+                    Daftar Halaman Maintenance
+                </h2>
+            </div>
+
+            <div class="routes-grid">
+                {% for route in maintenance_routes %}
+                <div class="maintenance-route-item" data-route-id="{{ route.id }}">
+                    <div class="route-info">
+                        <div class="route-name">
+                            {{ route.route_name | upper }}
+                        </div>
+                        <div class="route-path">
+                            {{ route.route_path }}
+                        </div>
+                        <div class="message-input" style="margin-top: 12px;">
+                            <label style="font-size: 0.85rem; color: #6b7280; display: block; margin-bottom: 6px;">
+                                <strong>Pesan Maintenance:</strong>
+                            </label>
+                            <textarea class="maintenance-message-input" placeholder="Tulis pesan maintenance untuk halaman ini...">{{ route.maintenance_message }}</textarea>
+                            <button class="save-message-btn" onclick="saveMaintenanceMessage({{ route.id }})">
+                                <i class="bi bi-check-lg"></i> Simpan Pesan
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="route-controls">
+                        <span class="status-badge" id="status-{{ route.id }}" 
+                              style="display: {% if route.is_maintenance %}block{% else %}none{% endif %}"
+                              class="status-maintenance">
+                            🔧 MAINTENANCE
+                        </span>
+                        <input type="checkbox" class="toggle-checkbox maintenance-toggle" 
+                               data-route-id="{{ route.id }}" 
+                               data-route-name="{{ route.route_name }}"
+                               {% if route.is_maintenance %}checked{% endif %}
+                               onchange="toggleMaintenance(this)">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function toggleMaintenance(toggle) {
+        const routeId = toggle.dataset.routeId;
+        const routeName = toggle.dataset.routeName;
+        const isChecked = toggle.checked;
+        const statusBadge = document.getElementById(`status-${routeId}`);
+        const routeItem = document.querySelector(`[data-route-id="${routeId}"]`);
+        const messageInput = routeItem.querySelector('.message-input');
+
+        // Disable toggle dan show loading
+        toggle.disabled = true;
+        toggle.classList.add('loading');
+
+        // Show/hide message input
+        if (isChecked) {
+            messageInput.classList.add('show');
+        } else {
+            messageInput.classList.remove('show');
+        }
+
+        // Send to backend
+        fetch('/api/maintenance/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                route_id: routeId,
+                is_maintenance: isChecked,
+                message: messageInput.querySelector('textarea').value || 'Platform sedang dalam pemeliharaan. Mohon menunggu.'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update status badge
+                if (isChecked) {
+                    statusBadge.style.display = 'inline-block';
+                } else {
+                    statusBadge.style.display = 'none';
+                }
+
+                // Show success message
+                showSuccessMessage(`Maintenance untuk "${routeName}" berhasil diubah`);
+            } else {
+                toggle.checked = !isChecked;
+                alert('Error: ' + (data.error || 'Terjadi kesalahan'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toggle.checked = !isChecked;
+            alert('Terjadi kesalahan: ' + error);
+        })
+        .finally(() => {
+            toggle.disabled = false;
+            toggle.classList.remove('loading');
+        });
+    }
+
+    function saveMaintenanceMessage(routeId) {
+        const routeItem = document.querySelector(`[data-route-id="${routeId}"]`);
+        const messageInput = routeItem.querySelector('textarea');
+        const toggle = routeItem.querySelector('.maintenance-toggle');
+        const saveBtn = routeItem.querySelector('.save-message-btn');
+
+        // Show loading
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<span class="spinner"></span> Menyimpan...';
+        saveBtn.disabled = true;
+
+        fetch('/api/maintenance/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                route_id: routeId,
+                is_maintenance: toggle.checked,
+                message: messageInput.value
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessMessage('Pesan maintenance berhasil disimpan');
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            } else {
+                alert('Error: ' + (data.error || 'Terjadi kesalahan'));
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan: ' + error);
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        });
+    }
+
+    function showSuccessMessage(message) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'success-tooltip';
+        tooltip.innerHTML = '<i class="bi bi-check-circle me-2"></i>' + message;
+        document.body.appendChild(tooltip);
+
+        setTimeout(() => {
+            tooltip.style.animation = 'slideInRight 0.3s ease-out reverse';
+            setTimeout(() => tooltip.remove(), 300);
+        }, 2500);
+    }
+
+    // Hide message input on page load
+    document.querySelectorAll('.maintenance-route-item').forEach(item => {
+        const toggle = item.querySelector('.maintenance-toggle');
+        if (!toggle.checked) {
+            item.querySelector('.message-input').classList.remove('show');
+        }
+    });
+</script>
+{% endblock %}

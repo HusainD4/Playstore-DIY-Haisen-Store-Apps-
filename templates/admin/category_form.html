@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if category %}Edit Kategori{% else %}Tambah Kategori{% endif %} - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .content-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .form-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        max-width: 600px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-cancel {
+        padding: 12px 24px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        color: var(--text-muted);
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #f9fafb;
+        color: var(--text-main);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Admin Content -->
+    <div class="admin-content">
+        
+        <!-- Header -->
+        <div class="content-header">
+            <h1>{% if category %}Edit Kategori{% else %}Tambah Kategori{% endif %}</h1>
+        </div>
+
+        <!-- Form -->
+        <div class="form-card">
+            <form method="POST">
+                <div class="form-group">
+                    <label class="form-label">Nama Kategori</label>
+                    <input type="text" name="name" class="form-control" value="{{ category.name if category else '' }}" placeholder="Masukkan nama kategori" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Deskripsi</label>
+                    <textarea name="description" class="form-control" placeholder="Masukkan deskripsi kategori">{{ category.description if category else '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Icon</label>
+                    <select name="icon" class="form-select">
+                        <option value="folder" {% if category and category.icon == 'folder' %}selected{% endif %}>📁 Folder</option>
+                        <option value="gamepad" {% if category and category.icon == 'gamepad' %}selected{% endif %}>🎮 Game</option>
+                        <option value="book" {% if category and category.icon == 'book' %}selected{% endif %}>📚 Buku</option>
+                        <option value="music-note" {% if category and category.icon == 'music-note' %}selected{% endif %}>🎵 Musik</option>
+                        <option value="film" {% if category and category.icon == 'film' %}selected{% endif %}>🎬 Film</option>
+                        <option value="image" {% if category and category.icon == 'image' %}selected{% endif %}>🖼️ Foto</option>
+                        <option value="briefcase" {% if category and category.icon == 'briefcase' %}selected{% endif %}>💼 Bisnis</option>
+                        <option value="heart" {% if category and category.icon == 'heart' %}selected{% endif %}>❤️ Kesehatan</option>
+                        <option value="globe" {% if category and category.icon == 'globe' %}selected{% endif %}>🌐 Berita</option>
+                        <option value="cart" {% if category and category.icon == 'cart' %}selected{% endif %}>🛒 Belanja</option>
+                        <option value="code" {% if category and category.icon == 'code' %}selected{% endif %}>💻 Teknologi</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-{% if category %}check-lg{% else %}plus-lg{% endif %}"></i>
+                        {% if category %}Simpan Perubahan{% else %}Tambah Kategori{% endif %}
+                    </button>
+                    <a href="{{ url_for('admin_categories') }}" class="btn-cancel">
+                        Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Developer - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .content-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* Section Titles */
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin: 24px 0 16px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .section-title:first-child {
+        margin-top: 0;
+    }
+
+    .badge-count {
+        background: var(--primary);
+        color: white;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+    }
+
+    .badge-pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .badge-approved {
+        background: #d1fae5;
+        color: #059669;
+    }
+
+    .request-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-bottom: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .request-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary);
+    }
+
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .request-user {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .user-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), #a855f7);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .user-info h4 {
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 4px;
+        font-size: 1.1rem;
+    }
+
+    .user-info p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .request-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        background: var(--bg-body);
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .request-content {
+        color: var(--text-main);
+        line-height: 1.7;
+        padding: 16px 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        margin: 16px 0;
+        background: #f9fafb;
+        padding: 16px;
+        border-radius: 8px;
+    }
+
+    .request-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .btn-approve {
+        padding: 10px 24px;
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-approve:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-reject {
+        padding: 10px 24px;
+        border-radius: 8px;
+        border: 1px solid #fecaca;
+        background: white;
+        color: #dc2626;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-reject:hover {
+        background: #fef2f2;
+        border-color: #dc2626;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--bg-white);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 16px;
+    }
+
+    .empty-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    .empty-text {
+        color: var(--text-muted);
+    }
+
+    .approved-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .approved-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .approved-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), #a855f7);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .approved-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .approved-name {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .approved-email {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Admin Content -->
+    <div class="admin-content">
+        
+        <!-- Header -->
+        <div class="content-header">
+            <h1>Kelola Request Developer</h1>
+        </div>
+
+        <!-- Pending Requests Section -->
+        <div class="section-title">
+            <i class="bi bi-hourglass-split"></i>
+            Menunggu Persetujuan
+            <span class="badge-count badge-pending">{{ pending_developers|length }}</span>
+        </div>
+
+        {% if pending_developers %}
+        <!-- Pending Requests List -->
+        <div>
+            {% for developer in pending_developers %}
+            <div class="request-card">
+                <div class="request-header">
+                    <div class="request-user">
+                        <div class="user-avatar">
+                            {% if developer.profile_photo %}
+                                <img src="{{ url_for('static', filename='uploads/profiles/' + developer.profile_photo) }}" alt="{{ developer.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <span style="display: none;">{{ developer.username[0]|upper }}</span>
+                            {% else %}
+                                {{ developer.username[0]|upper }}
+                            {% endif %}
+                        </div>
+                        <div class="user-info">
+                            <h4>{{ developer.username }}</h4>
+                            <p>{{ developer.email }}</p>
+                        </div>
+                    </div>
+                    <div class="request-date">
+                        <i class="bi bi-calendar3"></i> 
+                        {{ developer.created_at.strftime('%d %B %Y') if developer.created_at else '-' }}
+                    </div>
+                </div>
+                <div class="request-content">
+                    <strong><i class="bi bi-chat-left-quote"></i> Status:</strong><br>
+                    Menunggu persetujuan dari admin
+                </div>
+                <div class="request-actions">
+                    <form method="POST" action="{{ url_for('admin_reject_developer', developer_id=developer.id) }}" style="display: inline;">
+                        <button type="submit" class="btn-reject" onclick="return confirm('Tolak permintaan ini?')">
+                            <i class="bi bi-x-lg"></i> Tolak
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_approve_developer', developer_id=developer.id) }}" style="display: inline;">
+                        <button type="submit" class="btn-approve" onclick="return confirm('Setuju dengan permintaan ini? Developer akan menerima email konfirmasi.')">
+                            <i class="bi bi-check-lg"></i> Setuju
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State for Pending -->
+        <div class="empty-state" style="margin-bottom: 32px;">
+            <div class="empty-icon">✅</div>
+            <h3 class="empty-title">Tidak Ada Request Pending</h3>
+            <p class="empty-text">Semua permintaan developer telah diproses.</p>
+        </div>
+        {% endif %}
+
+        <!-- Approved Developers Section -->
+        <div class="section-title">
+            <i class="bi bi-check-circle-fill"></i>
+            Developer Aktif
+            <span class="badge-count badge-approved">{{ approved_developers|length }}</span>
+        </div>
+
+        {% if approved_developers %}
+        <!-- Approved Developers List -->
+        <div>
+            {% for developer in approved_developers %}
+            <div class="approved-card">
+                <div class="approved-info">
+                    <div class="approved-avatar">
+                        {% if developer.profile_photo %}
+                            <img src="{{ url_for('static', filename='uploads/profiles/' + developer.profile_photo) }}" alt="{{ developer.username }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <span style="display: none;">{{ developer.username[0]|upper }}</span>
+                        {% else %}
+                            {{ developer.username[0]|upper }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="approved-name">{{ developer.username }}</div>
+                        <div class="approved-email">{{ developer.email }}</div>
+                    </div>
+                </div>
+                <div>
+                    <span class="status-badge badge-approved">
+                        <i class="bi bi-check-circle-fill"></i> Aktif
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State for Approved -->
+        <div class="empty-state">
+            <div class="empty-icon">👥</div>
+            <h3 class="empty-title">Belum Ada Developer</h3>
+            <p class="empty-text">Belum ada developer yang disetujui.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

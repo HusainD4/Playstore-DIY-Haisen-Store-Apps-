@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Kelola Kategori - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .content-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 16px;
+    }
+
+    .category-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        transition: all 0.2s ease;
+    }
+
+    .category-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .category-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+    }
+
+    .category-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
+
+    .category-count {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .category-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-action:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .btn-action.danger:hover {
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #dc2626;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Admin Content -->
+    <div class="admin-content">
+        
+        <!-- Header -->
+        <div class="content-header">
+            <h1>Kelola Kategori</h1>
+            <a href="{{ url_for('admin_category_add') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Kategori
+            </a>
+        </div>
+
+        {% if categories %}
+        <!-- Categories Grid -->
+        <div class="category-grid">
+            {% for category in categories %}
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="bi bi-folder-fill"></i>
+                </div>
+                <div class="category-name">{{ category.name }}</div>
+                <div class="category-count">{{ category.apps|length }} aplikasi</div>
+                {% if category.apps %}
+                <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+                    {% for a in category.apps[:4] %}
+                        {% if a.icon %}
+                        <img src="{{ url_for('static', filename='uploads/' + a.icon) }}" alt="{{ a.title }}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;border:1px solid var(--border);">
+                        {% else %}
+                        <div style="width:40px;height:40px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+                            <i class="bi bi-app text-muted"></i>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="category-actions">
+                    <!-- Edit -->
+                    <a href="{{ url_for('admin_category_edit', category_id=category.id) }}" class="btn-action">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+
+                    <!-- Delete -->
+                    <form action="{{ url_for('admin_category_delete', category_id=category.id) }}" 
+                        method="POST" 
+                        style="flex:1;"
+                        onsubmit="return confirm('Yakin ingin menghapus kategori ini?');">
+                        <button type="submit" class="btn-action danger" style="width:100%;">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">📁</div>
+            <h3>Tidak Ada Kategori</h3>
+            <p class="text-muted">Belum ada kategori yang ditambahkan.</p>
+            <a href="{{ url_for('admin_category_add') }}" class="btn btn-primary mt-3">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Kategori
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

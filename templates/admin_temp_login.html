@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Login (Sementara) - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-admin-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Animated background */
+    .login-admin-container::before {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: moveBackground 20s linear infinite;
+        top: -250px;
+        left: -250px;
+        opacity: 0.5;
+    }
+
+    .login-admin-container::after {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: moveBackground 25s linear infinite reverse;
+        bottom: -250px;
+        right: -250px;
+        opacity: 0.3;
+    }
+
+    @keyframes moveBackground {
+        0% {
+            transform: translate(0, 0);
+        }
+        100% {
+            transform: translate(50px, 50px);
+        }
+    }
+
+    .login-admin-content {
+        position: relative;
+        z-index: 10;
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 450px;
+        width: 100%;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-admin-header {
+        text-align: center;
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .login-admin-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+    }
+
+    .login-admin-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+
+    .login-admin-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        line-height: 1.5;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 12px;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-login:active {
+        transform: translateY(0);
+    }
+
+    /* Alert */
+    .alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        animation: slideInDown 0.3s ease-out;
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+        border-left: 4px solid #10b981;
+    }
+
+    .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border-left: 4px solid #ef4444;
+    }
+
+    .alert-info {
+        background: #eff6ff;
+        color: #1e40af;
+        border-left: 4px solid #3b82f6;
+    }
+
+    .info-banner {
+        background: #eff6ff;
+        border-left: 4px solid #3b82f6;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+    }
+
+    .info-banner p {
+        margin: 0;
+        color: #1e40af;
+        line-height: 1.5;
+    }
+
+    .info-banner strong {
+        color: #1e3a8a;
+    }
+
+    .warning-text {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        color: #f59e0b;
+        font-size: 0.85rem;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #f3f4f6;
+    }
+
+    .warning-text i {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #f3f4f6;
+    }
+
+    .back-link a {
+        color: #4f46e5;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .back-link a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+        .login-admin-content {
+            padding: 32px 20px;
+        }
+
+        .login-admin-title {
+            font-size: 1.3rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-admin-container">
+    <div class="login-admin-content">
+        <!-- Header -->
+        <div class="login-admin-header">
+            <div class="login-admin-icon">🔐</div>
+            <h1 class="login-admin-title">Admin Login</h1>
+            <p class="login-admin-subtitle">Halaman login sementara untuk admin selama sistem pemeliharaan</p>
+        </div>
+
+        <!-- Info banner -->
+        <div class="info-banner">
+            <p>
+                <strong>ℹ️ Informasi:</strong> Halaman login sedang dalam pemeliharaan. 
+                Silakan gunakan form login admin ini untuk mengakses dashboard admin.
+            </p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'error' if category == 'error' else 'success' if category == 'success' else 'info' }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Login form -->
+        <form method="POST" action="{{ url_for('admin_temp_login') }}">
+            <!-- Username -->
+            <div class="form-group">
+                <label class="form-label" for="username">
+                    <i class="bi bi-person-fill"></i>
+                    Username
+                </label>
+                <input type="text" id="username" name="username" class="form-input" 
+                       placeholder="Masukkan username admin" required autofocus>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label class="form-label" for="password">
+                    <i class="bi bi-lock-fill"></i>
+                    Password
+                </label>
+                <input type="password" id="password" name="password" class="form-input" 
+                       placeholder="Masukkan password" required>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn-login">
+                <i class="bi bi-shield-lock-fill me-2"></i>
+                Login sebagai Admin
+            </button>
+
+            <!-- Warning text -->
+            <div class="warning-text">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span>Hanya admin yang dapat menggunakan halaman login ini selama periode pemeliharaan.</span>
+            </div>
+        </form>
+
+        <!-- Back link -->
+        <div class="back-link">
+            <a href="{{ url_for('maintenance_page', route_name='login') }}">
+                <i class="bi bi-arrow-left me-2"></i>
+                Kembali ke halaman pemeliharaan
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

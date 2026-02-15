@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Error {{ code }} - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- Error Page Layout --- */
+    .error-wrapper {
+        min-height: 60vh; /* Agar tidak sepenuh layar, tapi cukup tinggi */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 40px 0;
+    }
+
+    .error-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 24px; /* Sudut membulat yang besar */
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        max-width: 500px;
+        width: 100%;
+    }
+
+    /* Angka Error Besar dengan Gradient */
+    .error-code {
+        font-size: 6rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #111827 0%, #9CA3AF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent; /* Efek gradient pada teks */
+    }
+
+    .error-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 12px;
+    }
+
+    .error-desc {
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 32px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    <div class="error-wrapper">
+        <div class="error-card">
+            <!-- Angka Error -->
+            <div class="error-code">{{ code }}</div>
+            
+            <!-- Judul Error -->
+            <h2 class="error-title">
+                {% if code == 404 %}
+                Halaman Tidak Ditemukan
+                {% else %}
+                Terjadi Kesalahan
+                {% endif %}
+            </h2>
+            
+            <!-- Pesan Deskripsi -->
+            <p class="error-desc">
+                {% if code == 404 %}
+                Maaf, halaman yang Anda cari tidak dapat ditemukan atau telah dipindahkan.
+                {% else %}
+                {{ message }}
+                {% endif %}
+            </p>
+            
+            <!-- Tombol Aksi -->
+            <a href="{{ url_for('index') }}" class="btn btn-primary px-5 py-3 shadow-sm">
+                <i class="bi bi-house me-2"></i> Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

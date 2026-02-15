@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+
+{% block title %}Hapus Akun - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-container {
+    max-width: 600px;
+    margin: 40px auto;
+}
+
+.danger-card {
+    background: #ffebee;
+    border: 2px solid #c62828;
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+}
+
+.danger-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.danger-title {
+    font-family: 'Google Sans', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #c62828;
+    margin-bottom: 8px;
+}
+
+.danger-desc {
+    color: #8b0000;
+    font-size: 15px;
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.warning-list {
+    background: white;
+    border-left: 4px solid #ff9100;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 32px;
+    text-align: left;
+}
+
+.warning-list h4 {
+    color: #ff6f00;
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+.warning-list ul {
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+
+.warning-list li {
+    color: #d32f2f;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.warning-list li:last-child {
+    margin-bottom: 0;
+}
+
+.confirmation {
+    background: white;
+    border-left: 4px solid #1976d2;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.confirmation-check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.confirmation-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.confirmation-check label {
+    flex: 1;
+    margin: 0;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #202124;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #c62828;
+    box-shadow: 0 0 0 3px rgba(198,40,40,0.1);
+}
+
+.btn-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-danger {
+    flex: 1;
+    padding: 12px;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #b71c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(211,47,47,0.3);
+}
+
+.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: #f1f3f4;
+    color: #202124;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-cancel:hover {
+    background: #e8eaed;
+}
+
+.alert {
+    margin-bottom: 24px;
+    border-radius: 8px;
+    border: none;
+    padding: 12px 16px;
+}
+
+@media (max-width: 640px) {
+    .form-container {
+        margin: 20px 10px;
+    }
+    
+    .danger-card {
+        padding: 16px;
+    }
+    
+    .danger-icon {
+        font-size: 48px;
+    }
+    
+    .danger-title {
+        font-size: 20px;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'success' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="danger-card">
+        <span class="danger-icon">⚠️</span>
+        <h1 class="danger-title">Hapus Akun Secara Permanen</h1>
+        <p class="danger-desc">
+            Tindakan ini tidak dapat dibatalkan. Pastikan Anda telah mempertimbangkan dengan baik sebelum melanjutkan.
+        </p>
+
+        <div class="warning-list">
+            <h4>⚠️ Apa yang akan terjadi:</h4>
+            <ul>
+                <li>✗ Akun Anda akan dihapus secara permanen</li>
+                <li>✗ Semua data pribadi akan dihapus</li>
+                {% if user.role == 'developer' %}
+                    <li>✗ Semua aplikasi Anda akan dihapus</li>
+                {% endif %}
+                <li>✗ Riwayat login dan transaksi akan dihapus</li>
+                <li>✗ Review dan rating Anda akan dihapus</li>
+                <li>✗ Tidak dapat mendaftar kembali dengan username yang sama selama 30 hari</li>
+            </ul>
+        </div>
+
+        <form method="POST">
+            <div class="confirmation">
+                <div class="confirmation-check">
+                    <input type="checkbox" id="confirm1" required>
+                    <label for="confirm1">
+                        Saya memahami bahwa akun saya akan dihapus secara permanen
+                    </label>
+                </div>
+                
+                <div class="confirmation-check">
+                    <input type="checkbox" id="confirm2" required>
+                    <label for="confirm2">
+                        Saya telah membackup semua data penting saya
+                    </label>
+                </div>
+                
+                <div class="confirmation-check">
+                    <input type="checkbox" id="confirm3" required>
+                    <label for="confirm3">
+                        Saya ingin melanjutkan penghapusan akun
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Verifikasi Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Masukkan password Anda untuk verifikasi" required>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-danger" id="deleteBtn" disabled onclick="return confirm('⚠️ PERHATIAN: Ini adalah tindakan terakhir! Akun Anda akan dihapus permanen setelah konfirmasi. Lanjutkan?')">
+                    <i class="bi bi-trash"></i> Hapus Akun Sekarang
+                </button>
+                <a href="{{ url_for('profile') }}" class="btn-cancel">
+                    <i class="bi bi-arrow-left"></i> Batal
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Enable/disable delete button ketika semua checkbox checked
+const confirm1 = document.getElementById('confirm1');
+const confirm2 = document.getElementById('confirm2');
+const confirm3 = document.getElementById('confirm3');
+const deleteBtn = document.getElementById('deleteBtn');
+
+function updateDeleteBtn() {
+    deleteBtn.disabled = !(confirm1.checked && confirm2.checked && confirm3.checked);
+}
+
+confirm1.addEventListener('change', updateDeleteBtn);
+confirm2.addEventListener('change', updateDeleteBtn);
+confirm3.addEventListener('change', updateDeleteBtn);
+</script>
+{% endblock %}

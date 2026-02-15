@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if app %}Edit Aplikasi{% else %}Tambah Aplikasi{% endif %} - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .content-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .form-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        max-width: 800px;
+    }
+
+    .form-section {
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .form-section:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    .form-label span {
+        color: #dc2626;
+    }
+
+    .form-control, .form-select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        background: var(--bg-white);
+        color: var(--text-main);
+    }
+
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        margin-bottom: 16px;
+    }
+
+    .file-input-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        border: 2px dashed var(--border);
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #f9fafb;
+    }
+
+    .file-input-label:hover {
+        border-color: var(--primary);
+        background: var(--primary-light);
+    }
+
+    .file-input-label i {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 12px;
+    }
+
+    .file-input-label span {
+        font-weight: 500;
+        color: var(--text-main);
+    }
+
+    .file-input-label small {
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .file-input-label input {
+        display: none;
+    }
+
+    .current-file {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+    }
+
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+    }
+
+    .preview-item {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+    }
+
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-cancel {
+        padding: 12px 24px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        color: var(--text-muted);
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-cancel:hover {
+        background: #f9fafb;
+        color: var(--text-main);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Admin Content -->
+    <div class="admin-content">
+        
+        <!-- Header -->
+        <div class="content-header">
+            <h1>{% if app %}Edit Aplikasi{% else %}Tambah Aplikasi{% endif %}</h1>
+        </div>
+
+        <!-- Form -->
+        <div class="form-card">
+            <form method="POST" enctype="multipart/form-data">
+                
+                <!-- Basic Info -->
+                <div class="form-section">
+                    <div class="form-section-title">Informasi Dasar</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Nama Aplikasi <span>*</span></label>
+                        <input type="text" name="title" class="form-control" value="{{ app.title if app else '' }}" placeholder="Masukkan nama aplikasi" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Deskripsi</label>
+                        <textarea name="description" class="form-control" placeholder="Masukkan deskripsi aplikasi">{{ app.description if app else '' }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Kategori</label>
+                        <select name="category_id" class="form-select">
+                            <option value="">Pilih kategori</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if app and app.category_id == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Screenshots -->
+                <div class="form-section">
+                    <div class="form-section-title">Screenshots</div>
+                    <div class="form-group">
+                        <div class="file-input-wrapper">
+                            <label class="file-input-label" for="screenshots-input">
+                                <i class="bi bi-images"></i>
+                                <span>Pilih gambar screenshot</span>
+                                <small>Bisa memilih beberapa file (PNG, JPG)</small>
+                                <input type="file" id="screenshots-input" name="screenshots" multiple accept="image/*">
+                            </label>
+                        </div>
+                        {% if app and app.screenshots %}
+                        <div class="current-file">
+                            ✓ Screenshots saat ini:
+                        </div>
+                        <div class="preview-grid" style="margin-top:8px;">
+                            {% for ss in app.screenshots.split(',') %}
+                                <div class="preview-item"><img src="{{ url_for('static', filename='uploads/' + ss) }}" alt="ss"></div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- App Details -->
+                <div class="form-section">
+                    <div class="form-section-title">Detail Aplikasi</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Versi</label>
+                        <input type="text" name="version" class="form-control" value="{{ app.version if app else '1.0' }}" placeholder="1.0">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">File APK</label>
+                        <div class="file-input-wrapper">
+                            <label class="file-input-label" for="file-input">
+                                <i class="bi bi-upload"></i>
+                                <span>Pilih file APK</span>
+                                <small>File APK (.apk)</small>
+                                <input type="file" id="file-input" name="file_path" accept=".apk">
+                            </label>
+                        </div>
+                        {% if app and app.file_path %}
+                        <div class="current-file">
+                            ✓ File saat ini: <a href="{{ url_for('static', filename='uploads/' + app.file_path) }}" target="_blank">Lihat file</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- App Icon -->
+                <div class="form-section">
+                    <div class="form-section-title">Ikon Aplikasi</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Gambar Ikon</label>
+                        <div class="file-input-wrapper">
+                            <label class="file-input-label" for="icon-input">
+                                <i class="bi bi-image"></i>
+                                <span>Pilih gambar ikon</span>
+                                <small>PNG, JPG, WEBP (512x512)</small>
+                                <input type="file" id="icon-input" name="icon" accept="image/*">
+                            </label>
+                        </div>
+                        {% if app and app.icon %}
+                        <div class="current-file">
+                            ✓ Ikon saat ini:
+                        </div>
+                        <div class="preview-item" style="margin-top: 8px;">
+                            <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="Icon">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="btn-group">
+                    <a href="{{ url_for('admin_apps') }}" class="btn-cancel">
+                        <i class="bi bi-arrow-left"></i> Batal
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-{% if app %}check{% else %}plus-lg{% endif %}"></i>
+                        {% if app %}Simpan Perubahan{% else %}Tambah Aplikasi{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // File Preview Functions for Admin App Form
+    
+    // Icon Preview
+    document.getElementById('icon-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // Remove existing preview if any
+                const existingPreview = document.getElementById('icon-new-preview');
+                if (existingPreview) existingPreview.remove();
+                
+                // Create new preview
+                const previewContainer = document.createElement('div');
+                previewContainer.id = 'icon-new-preview';
+                previewContainer.className = 'preview-item';
+                previewContainer.style.marginTop = '8px';
+                previewContainer.innerHTML = '<img src="' + event.target.result + '" alt="Icon Preview">';
+                
+                const wrapper = this.closest('.form-group');
+                wrapper.appendChild(previewContainer);
+            }.bind(this);
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Screenshots Preview
+    document.getElementById('screenshots-input').addEventListener('change', function(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            const container = document.getElementById('screenshots-new-preview');
+            if (container) container.remove();
+            
+            const newContainer = document.createElement('div');
+            newContainer.id = 'screenshots-new-preview';
+            newContainer.className = 'preview-grid';
+            newContainer.style.marginTop = '8px';
+            
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const item = document.createElement('div');
+                        item.className = 'preview-item';
+                        item.innerHTML = '<img src="' + event.target.result + '" alt="Preview">';
+                        newContainer.appendChild(item);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            const wrapper = this.closest('.form-group');
+            wrapper.appendChild(newContainer);
+        }
+    });
+    
+    // File (APK) Preview
+    document.getElementById('file-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const existingPreview = document.getElementById('file-new-preview');
+            if (existingPreview) existingPreview.remove();
+            
+            const previewContainer = document.createElement('div');
+            previewContainer.id = 'file-new-preview';
+            previewContainer.className = 'current-file';
+            previewContainer.style.marginTop = '8px';
+            previewContainer.innerHTML = '📦 File baru: ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+            
+            const wrapper = this.closest('.form-group');
+            wrapper.appendChild(previewContainer);
+        }
+    });
+</script>
+{% endblock %}

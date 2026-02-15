@@ -1,0 +1,91 @@
+<!-- Admin Sidebar -->
+<div class="admin-sidebar" id="adminSidebar">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header" style="height: auto; padding: 16px 0; margin-bottom: 8px; border-bottom: none;">
+        <a href="{{ url_for('admin_dashboard') }}" style="font-size: 1.1rem; padding: 0 12px;">
+            <i class="bi bi-shield-lock-fill" style="color: var(--primary);"></i>
+            <span style="color: var(--text-main);">Admin Console</span>
+        </a>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar-nav" style="padding: 8px 0;">
+        <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px;">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        
+        <a class="nav-link {% if request.endpoint in ['admin_apps', 'admin_app_add', 'admin_app_edit'] %}active{% endif %}" href="{{ url_for('admin_apps') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px;">
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+            <span>Kelola Aplikasi</span>
+        </a>
+        
+        <a class="nav-link {% if request.endpoint in ['admin_categories', 'admin_category_add', 'admin_category_edit'] %}active{% endif %}" href="{{ url_for('admin_categories') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px;">
+            <i class="bi bi-folder-fill"></i>
+            <span>Kategori</span>
+        </a>
+        
+        <a class="nav-link {% if request.endpoint == 'admin_users' %}active{% endif %}" href="{{ url_for('admin_users') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px;">
+            <i class="bi bi-people-fill"></i>
+            <span>Pengguna</span>
+        </a>
+        
+        <a class="nav-link {% if request.endpoint == 'admin_developer_requests' %}active{% endif %}" href="{{ url_for('admin_developer_requests') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px;">
+            <i class="bi bi-person-badge-fill"></i>
+            <span>Request Developer</span>
+        </a>
+        
+        <a class="nav-link {% if request.endpoint == 'admin_reviews' %}active{% endif %}" href="{{ url_for('admin_reviews') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px;">
+            <i class="bi bi-chat-quote-fill"></i>
+            <span>Review & Rating</span>
+        </a>
+        
+        <a class="nav-link {% if request.endpoint == 'admin_account_deletion_requests' %}active{% endif %}" href="{{ url_for('admin_account_deletion_requests') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px;">
+            <i class="bi bi-trash3-fill"></i>
+            <span>Penghapusan Akun</span>
+        </a>
+
+        <a class="nav-link {% if request.endpoint in ['admin_help_requests', 'admin_help_request_detail'] %}active{% endif %}" href="{{ url_for('admin_help_requests') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px;">
+            <i class="bi bi-headset"></i>
+            <span>Permintaan Bantuan</span>
+        </a>
+
+        <a class="nav-link {% if request.endpoint == 'admin_maintenance' %}active{% endif %}" href="{{ url_for('admin_maintenance') }}" style="padding: 12px 16px; margin: 2px 8px; border-radius: 8px; background: #fee2e2; color: #991b1b;">
+            <i class="bi bi-tools"></i>
+            <span>Kelola Maintenance</span>
+        </a>
+
+        <div style="height: 1px; background: var(--border); margin: 12px 16px;"></div>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer" style="padding: 16px; border-top: 1px solid var(--border); background: transparent;">
+        <a href="{{ url_for('index') }}" style="padding: 10px 12px; border-radius: 8px; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 10px;">
+            <i class="bi bi-arrow-bar-left"></i>
+            <span>Kembali ke Website</span>
+        </a>
+    </div>
+</div>
+
+<!-- Mobile Toggle Button -->
+<button class="navbar-toggler" type="button" onclick="toggleAdminSidebar()" style="position: fixed; top: 16px; left: 16px; z-index: 1060; width: 40px; height: 40px; border-radius: 8px; background: var(--bg-white); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <i class="bi bi-list"></i>
+</button>
+
+<!-- Overlay for mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleAdminSidebar()" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1040;"></div>
+
+
+
+<script>
+function toggleAdminSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (sidebar) {
+        sidebar.classList.toggle('show');
+    }
+    if (overlay) {
+        overlay.classList.toggle('show');
+    }
+}
+</script>

@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service_title }} - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-wrapper {
+        min-height: calc(100vh - 68px - 100px);
+        padding: 40px 20px;
+        background: var(--bg-body);
+    }
+
+    .form-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: var(--shadow-sm);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .form-header i {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 16px;
+    }
+
+    .form-header h2 {
+        font-weight: 700;
+        font-size: 1.75rem;
+        margin-bottom: 8px;
+        color: var(--text-main);
+    }
+
+    .form-header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary);
+        font-weight: 500;
+        text-decoration: none;
+        margin-bottom: 24px;
+        transition: all 0.2s;
+    }
+
+    .back-link:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    /* Ensure select dropdown sits correctly under its label */
+    .form-group .form-label { display: block; }
+    .form-group .form-select { display: block; margin-top: 6px; }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-control, .form-select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        background: var(--bg-white);
+        color: var(--text-main);
+    }
+
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn-submit {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+    }
+
+    .btn-submit:hover {
+        background: var(--primary-hover);
+    }
+
+    .form-note {
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 16px;
+    }
+
+    .form-note i {
+        color: var(--primary);
+        margin-right: 4px;
+    }
+
+    .info-box {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 24px;
+    }
+
+    .info-box h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #0369a1;
+    }
+
+    .info-box p {
+        font-size: 0.9rem;
+        color: #075985;
+        margin-bottom: 8px;
+    }
+
+    .info-box a {
+        color: #0284c7;
+        font-weight: 500;
+    }
+
+    .alert-custom {
+        background-color: var(--primary-light);
+        color: var(--primary-hover);
+        padding: 12px 16px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .alert-custom i {
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card">
+        <a href="{{ url_for('layanan_index') }}" class="back-link">
+            <i class="bi bi-arrow-left"></i>
+            Kembali ke Layanan
+        </a>
+
+        <div class="form-header">
+            <i class="bi {{ service_icon }}"></i>
+            <h2>{{ service_title }}</h2>
+            <p>{{ service_description }}</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ 'alert-custom' if category == 'error' else 'alert-custom' }}">
+                        <i class="bi bi-{{ 'exclamation-triangle-fill' if category == 'error' else 'info-circle-fill' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('submit_help_request') }}">
+            <input type="hidden" name="issue_type" value="{{ service_type }}">
+
+            <div class="form-group">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" name="name" class="form-control" placeholder="Masukkan nama lengkap Anda" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" placeholder="Masukkan email yang dapat dihubungi" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Pesan</label>
+                <textarea name="message" class="form-control" placeholder="{{ service_placeholder }}" required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-send me-2"></i> Kirim Pesan
+            </button>
+        </form>
+
+        <p class="form-note">
+            <i class="bi bi-clock"></i> Tim kami akan merespons dalam 24-48 jam kerja
+        </p>
+
+        <div class="info-box">
+            <h4><i class="bi bi-envelope me-2"></i>Hubungi Langsung</h4>
+            <p>Untuk pertanyaan mendesak, hubungi kami langsung:</p>
+            <p style="margin-bottom: 0;"><strong>Email:</strong> <a href="mailto:haisen.bussines@gmail.com">haisen.bussines@gmail.com</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,794 @@
+{% extends 'base.html' %}
+
+{% block title %}Riwayat Download - User Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Import Font Modern (Inter) */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    /* Bootstrap Icons */
+    :root {
+        --primary-color: #4f46e5; /* Indigo Modern */
+        --primary-hover: #4338ca;
+        --bg-body: #f3f4f6;
+        --bg-card: #ffffff;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --border-color: #e5e7eb;
+        --success-bg: #d1fae5;
+        --success-text: #065f46;
+        --radius-lg: 16px;
+        --radius-md: 12px;
+        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+    }
+
+    /* Container Adjustments */
+    .container-fluid {
+        max-width: 1200px; /* Batasi lebar agar rapi di layar besar */
+        margin: 0 auto;
+    }
+
+    /* Header Styles */
+    h1.h2 { font-weight: 700; color: #111827; }
+    .text-muted { color: var(--text-muted) !important; }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Warna khusus untuk kartu statistik */
+    .stat-card:nth-child(1) .stat-icon { background-color: #e0e7ff; color: var(--primary-color); }
+    .stat-card:nth-child(2) .stat-icon { background-color: #dcfce7; color: var(--success-text); }
+    .stat-card:nth-child(3) .stat-icon { background-color: #fef3c7; color: #92400e; }
+    .stat-card:nth-child(4) .stat-icon { background-color: #fee2e2; color: #991b1b; }
+
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .stat-content h3 {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .stat-value {
+        font-size: 1.875rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-top: 0.25rem;
+    }
+
+    /* Tabs Navigation */
+    .nav-tabs {
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 2rem;
+        gap: 7rem;
+    }
+
+    .nav-link {
+        border: none;
+        color: var(--text-muted);
+        font-weight: 500;
+        padding: 1rem 0;
+        position: relative;
+        background: transparent;
+        transition: color 0.2s;
+    }
+
+    .nav-link:hover { color: var(--primary-color); }
+
+    .nav-link.active {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--primary-color);
+    }
+
+    /* List Group & Items */
+    .list-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .app-item, .developer-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* App Icon Styles */
+    .app-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background-color: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #d1d5db;
+    }
+
+    .app-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Typography within items */
+    .mb-1 { margin-bottom: 0.25rem; }
+    .fw-600 { font-weight: 600; }
+    
+    .version-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        background-color: #f3f4f6;
+        border-radius: 6px;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-right: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.2s;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-update {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    }
+    .btn-update:hover { background-color: var(--primary-hover); }
+
+    .btn-outline-primary {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+    }
+    .btn-outline-primary:hover {
+        background-color: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    .btn-follow.btn-unfollow {
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+        background-color: #fef2f2;
+    }
+    .btn-follow.btn-unfollow:hover {
+        background-color: #fee2e2;
+    }
+
+    .followed-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        background-color: var(--success-bg);
+        color: var(--success-text);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* Developer Card Specifics */
+    .developer-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .developer-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 4rem 2rem;
+        text-align: center;
+        border: 2px dashed var(--border-color);
+    }
+    .empty-state-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+        display: block;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .app-item, .developer-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .app-item .d-flex, .developer-card .d-flex {
+            width: 100%;
+        }
+        .text-end { text-align: left !important; margin-top: 0.5rem; }
+        .nav-tabs { gap: 1rem; overflow-x: auto; white-space: nowrap; }
+    }
+
+    /* Ensure action buttons stay horizontal and do not become full-width */
+    .app-item .text-end { display: flex; gap: 8px; align-items: center; justify-content: flex-end; }
+    .app-item .text-end .btn, .developer-card form .btn { width: auto !important; white-space: nowrap; }
+    @media (max-width: 420px) {
+        /* allow wrapping on very small screens but keep buttons side-by-side when possible */
+        .app-item .text-end { flex-wrap: wrap; justify-content: flex-start; }
+    }
+</style>
+
+<style>
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            width: 100%;
+            padding: 20px;
+            padding-top: 70px;
+        }
+    }
+
+
+    .container-fluid {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Header */
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .stat-card:nth-child(1) .stat-icon { background-color: #e8f0fe; color: var(--primary-color); }
+    .stat-card:nth-child(2) .stat-icon { background-color: #dcfce7; color: var(--success-color); }
+    .stat-card:nth-child(3) .stat-icon { background-color: #fef3c7; color: var(--warning-color); }
+    .stat-card:nth-child(4) .stat-icon { background-color: #fce7f3; color: var(--purple-color); }
+
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .stat-content h3 {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .stat-value {
+        font-size: 1.875rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-top: 0.25rem;
+    }
+
+    /* Tabs Navigation */
+    .nav-tabs {
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 2rem;
+        gap: 1.5rem;
+    }
+
+    .nav-link {
+        border: none;
+        color: var(--text-muted);
+        font-weight: 500;
+        padding: 1rem 0;
+        position: relative;
+        background: transparent;
+        transition: color 0.2s;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .nav-link:hover {
+        color: var(--primary-color);
+    }
+
+    .nav-link.active {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--primary-color);
+    }
+
+    /* History Items */
+    .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .history-item {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .history-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .history-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .history-icon.upload {
+        background: linear-gradient(135deg, #4285f4, #1f73b7);
+        color: white;
+    }
+
+    .history-icon.download {
+        background: linear-gradient(135deg, #34a853, #0d652d);
+        color: white;
+    }
+
+    .history-content {
+        flex: 1;
+        margin-left: 1rem;
+    }
+
+    .history-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.25rem;
+    }
+
+    .history-description {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .history-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .version-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        background: #f3f4f6;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.2s;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+        background-color: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 4rem 2rem;
+        text-align: center;
+        border: 2px dashed var(--border-color);
+    }
+
+    .empty-state-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+
+    .empty-state h5 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Alert */
+    .alert {
+        border-radius: var(--radius-md);
+        border: none;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-success {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .alert-warning {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .history-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .history-content {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .history-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-tabs {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <div class="col-lg-12">
+            <!-- Header -->
+            <div class="mb-5">
+                <h1 class="h2 mb-2 fw-700">📲 Perpustakaan Saya</h1>
+                <p class="text-muted">Kelola aplikasi yang telah Anda download dan ikuti developer favorit</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" style="border-radius: 12px; border: none; box-shadow: var(--shadow-sm);">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Statistics -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-download"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Aplikasi Diunduh</h3>
+                            <div class="stat-value">{{ downloads|length }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Developer Diikuti</h3>
+                            <div class="stat-value">{{ following|length }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-bell"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Notifikasi</h3>
+                            <div class="stat-value">{{ unread_notifications|default(0) }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-phone"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Update Tersedia</h3>
+                            <div class="stat-value">{{ updates_available|default(0) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="nav-tabs" role="tablist">
+                <button class="nav-link active" id="downloads-tab" data-bs-toggle="tab" data-bs-target="#downloads" type="button">
+                    <i class="bi bi-download me-2"></i> Aplikasi Saya ({{ downloads|length }})
+                </button>
+                <button class="nav-link" id="following-tab" data-bs-toggle="tab" data-bs-target="#following" type="button">
+                    <i class="bi bi-person-check me-2"></i> Developer Diikuti ({{ following|length }})
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Download History -->
+                <div class="tab-pane fade show active" id="downloads" role="tabpanel">
+                    {% if downloads %}
+                    <div class="list-group">
+                        {% for download in downloads %}
+                        <div class="app-item">
+                            <div class="d-flex align-items-center" style="flex: 1;">
+                                <div class="app-icon">
+                                    {% if download.app.icon %}
+                                        <img src="{{ url_for('static', filename='uploads/' + download.app.icon) }}" 
+                                             alt="{{ download.app.title }}">
+                                    {% else %}
+                                        <i class="bi bi-android2"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-1 fw-600">{{ download.app.title }}</h5>
+                                    <p class="text-muted mb-2" style="font-size: 0.9rem;">
+                                        Oleh <strong>{{ download.app.developer or download.app.owner.username }}</strong>
+                                    </p>
+                                    <div class="d-flex flex-wrap">
+                                        <span class="version-info">
+                                            <i class="bi bi-box-seam"></i> v{{ download.version }}
+                                        </span>
+                                        <span class="version-info">
+                                            <i class="bi bi-stars"></i> Terbaru: v{{ download.app.version }}
+                                        </span>
+                                        <span class="version-info">
+                                            <i class="bi bi-calendar-event"></i> {{ download.downloaded_at.strftime('%d %b %Y') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end d-flex flex-column align-items-end gap-2">
+                                {% if download.version != download.app.version %}
+                                    <a href="{{ url_for('download', app_id=download.app.id) }}" class="btn btn-update">
+                                        <i class="bi bi-arrow-repeat"></i> Update
+                                    </a>
+                                {% else %}
+                                    <span class="followed-badge"><i class="bi bi-check-lg me-1"></i> Terbaru</span>
+                                {% endif %}
+                                <a href="{{ url_for('app_detail', app_id=download.app.id) }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Detail
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <span class="empty-state-icon">⬇️</span>
+                        <h5>Belum Ada Download</h5>
+                        <p class="text-muted">Mulai download aplikasi favorit Anda</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-update mt-3">
+                            <i class="bi bi-search"></i> Jelajahi Aplikasi
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Following Developers -->
+                <div class="tab-pane fade" id="following" role="tabpanel">
+                    {% if following %}
+                    <div class="list-group">
+                        {% for follow in following %}
+                        <div class="developer-card">
+                            <div class="developer-info">
+                                <div class="developer-avatar">
+                                    {% if follow.developer.profile_photo %}
+                                        <img src="{{ url_for('static', filename='uploads/profiles/' + follow.developer.profile_photo) }}" alt="{{ follow.developer.username }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    {% else %}
+                                        {{ follow.developer.username[0]|upper }}
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 fw-600">{{ follow.developer.username }}</h5>
+                                    <p class="text-muted mb-0" style="font-size: 0.85rem;">
+                                        <i class="bi bi-clock-history"></i> Mengikuti sejak {{ follow.followed_at.strftime('%d %b %Y') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ url_for('unfollow_developer', developer_id=follow.developer_id) }}" style="margin: 0;">
+                                <button type="submit" class="btn btn-follow btn-unfollow">
+                                    <i class="bi bi-person-dash"></i> Berhenti Ikuti
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <span class="empty-state-icon">👥</span>
+                        <h5>Belum Mengikuti Developer</h5>
+                        <p class="text-muted">Ikuti developer favorit untuk mendapatkan notifikasi update terbaru</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-update mt-3">
+                            <i class="bi bi-plus-lg"></i> Ikuti Developer
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}Kelola Aplikasi - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .content-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .app-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .admin-app-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+
+    .admin-app-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    .app-card-header {
+        padding: 24px;
+        display: flex;
+        justify-content: center;
+        background: #f9fafb;
+    }
+
+    .app-card-header img {
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+        object-fit: cover;
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+    }
+
+    .app-card-header .placeholder-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+        background: var(--primary-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 2rem;
+    }
+
+    .app-card-body {
+        padding: 16px;
+    }
+
+    .app-title {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 8px;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .app-stats {
+        display: flex;
+        gap: 12px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+    }
+
+    .app-stats span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .app-card-actions {
+        display: flex;
+        gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+    }
+
+    .action-btn {
+        flex: 1;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        color: var(--text-muted);
+        text-align: center;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .action-btn.delete:hover {
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #dc2626;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 16px;
+    }
+
+    .empty-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    .empty-text {
+        color: var(--text-muted);
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Admin Content -->
+    <div class="admin-content">
+        
+        <!-- Header -->
+        <div class="content-header">
+            <h1>Kelola Aplikasi</h1>
+            <a href="{{ url_for('admin_app_add') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Aplikasi
+            </a>
+        </div>
+        
+        {% if apps %}
+        <!-- Grid View -->
+        <div class="app-grid">
+            {% for app in apps %}
+            <div class="admin-app-card">
+                <div class="app-card-header">
+                    {% if app.icon %}
+                    <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="placeholder-icon" style="display: none;">
+                        <i class="bi bi-app"></i>
+                    </div>
+                    {% else %}
+                    <div class="placeholder-icon">
+                        <i class="bi bi-app"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="app-card-body">
+                    <div class="app-title" title="{{ app.title }}">{{ app.title }}</div>
+                    <div class="app-stats">
+                        <span><i class="bi bi-download"></i> {{ app.downloads }}</span>
+                        <span class="text-warning"><i class="bi bi-star-fill"></i> {{ app.rating or '-' }}</span>
+                    </div>
+                    <div class="app-card-actions">
+                        <a href="{{ url_for('app_detail', app_id=app.id) }}" class="action-btn" title="Lihat Detail">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{{ url_for('admin_app_edit', id=app.id) }}" class="action-btn" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{{ url_for('admin_app_delete', app_id=app.id) }}" class="action-btn delete" title="Hapus" onclick="return confirm('Hapus aplikasi ini?')">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">📱</div>
+            <h3 class="empty-title">Tidak Ada Aplikasi</h3>
+            <p class="empty-text">Belum ada aplikasi yang ditambahkan. Mulai tambahkan aplikasi baru untuk mengisi platform.</p>
+            <a href="{{ url_for('admin_app_add') }}" class="btn btn-primary mt-3">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Aplikasi
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

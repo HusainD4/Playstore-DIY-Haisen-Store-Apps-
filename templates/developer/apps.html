@@ -1,0 +1,507 @@
+{% extends 'base.html' %}
+
+{% block title %}Aplikasi Saya - Developer Dashboard Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Layout - Sidebar integration */
+    .admin-content {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+        padding: 32px;
+        box-sizing: border-box;
+        transition: margin-left 0.3s ease;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            width: 100%;
+            padding: 20px;
+            padding-top: 70px;
+        }
+    }
+
+    :root {
+        --primary-color: #4285f4;
+        --primary-hover: #3367d6;
+        --bg-body: #f3f4f6;
+        --bg-card: #ffffff;
+        --text-main: #1f2937;
+        --text-muted: #6b7280;
+        --border-color: #e5e7eb;
+        --success-color: #34a853;
+        --danger-color: #ea4335;
+        --radius-lg: 16px;
+        --radius-md: 12px;
+        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+    }
+
+    .container-fluid {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Header */
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .stat-card:nth-child(1) .stat-icon { background-color: #e8f0fe; color: var(--primary-color); }
+    .stat-card:nth-child(2) .stat-icon { background-color: #dcfce7; color: var(--success-color); }
+    .stat-card:nth-child(3) .stat-icon { background-color: #fef3c7; color: #b45309; }
+
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .stat-content h3 {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .stat-value {
+        font-size: 1.875rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-top: 0.25rem;
+    }
+
+    /* App List */
+    .app-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .app-item {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .app-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Fixed App Icon Display */
+    .app-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background-color: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e5e7eb;
+    }
+
+    .app-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .app-icon .placeholder-icon,
+    .app-icon .bi {
+        font-size: 1.75rem;
+        color: #d1d5db;
+    }
+
+    .app-info {
+        flex: 1;
+        margin-left: 1rem;
+    }
+
+    .app-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.25rem;
+    }
+
+    .app-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .app-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .status-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.2s;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(66, 133, 244, 0.3);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+        background-color: #f9fafb;
+        border-color: #d1d5db;
+    }
+
+    .btn-warning {
+        background-color: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+
+    .btn-warning:hover {
+        background-color: #fde68a;
+    }
+
+    .btn-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+        background-color: #fecaca;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 4rem 2rem;
+        text-align: center;
+        border: 2px dashed var(--border-color);
+    }
+
+    .empty-state-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+
+    .empty-state h5 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Alert */
+    .alert {
+        border-radius: var(--radius-md);
+        border: none;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-success {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .alert-danger {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .alert-warning {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .alert-info {
+        background-color: #e0f2fe;
+        color: #075985;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .app-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .app-info {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .btn-group {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Developer Sidebar -->
+    {% include 'developer/sidebar.html' %}
+    
+    <!-- Main Content -->
+    <div class="admin-content">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-lg-12">
+                    <!-- Header -->
+                    <div class="page-header">
+                        <h1 class="page-title">
+                            <i class="bi bi-grid-3x3-gap-fill me-2" style="color: var(--primary-color);"></i>
+                            Aplikasi Saya
+                        </h1>
+                        <p class="page-subtitle">Kelola dan pantau semua aplikasi yang Anda publikasikan</p>
+                    </div>
+
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="mb-4">
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Statistics -->
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-app"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Total Aplikasi</h3>
+                                    <div class="stat-value">{{ apps|length }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-download"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Total Unduhan</h3>
+                                    <div class="stat-value">{{ apps|sum(attribute='downloads') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-star-fill"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Rating Rata-rata</h3>
+                                    <div class="stat-value">
+                                        {% if apps %}
+                                            {{ "%.1f"|format(apps|sum(attribute='rating')/apps|length) }}
+                                        {% else %}
+                                            0.0
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h5 mb-0 fw-600">Daftar Aplikasi</h2>
+                        <a href="{{ url_for('developer_app_add') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-lg"></i> Upload Aplikasi Baru
+                        </a>
+                    </div>
+
+                    <!-- Apps List -->
+                    {% if apps %}
+                        <div class="app-list">
+                            {% for app in apps %}
+                            <div class="app-item">
+                                <div class="d-flex align-items-center" style="flex: 1;">
+                                    <div class="app-icon">
+                                        {% if app.icon %}
+                                            <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}" onerror="this.parentElement.innerHTML='<i class=\'bi bi-android2 placeholder-icon\'></i>'">
+                                        {% else %}
+                                            <i class="bi bi-android2 placeholder-icon"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="app-info">
+                                        <h5 class="app-title">{{ app.title }}</h5>
+                                        <div class="app-meta">
+                                            <span class="app-meta-item">
+                                                <i class="bi bi-star-fill" style="color: #fbbf24;"></i>
+                                                {{ "%.1f"|format(app.rating if app.rating else 0) }} / 5.0
+                                            </span>
+                                            <span class="app-meta-item">
+                                                <i class="bi bi-download"></i>
+                                                {{ app.downloads }} unduhan
+                                            </span>
+                                            {% if app.version %}
+                                            <span class="app-meta-item">
+                                                <i class="bi bi-tag"></i>
+                                                v{{ app.version }}
+                                            </span>
+                                            {% endif %}
+                                            <span class="status-badge {{ 'status-active' if app.is_active else 'status-inactive' }}">
+                                                <i class="bi bi-{{ 'check-circle' if app.is_active else 'x-circle' }}"></i>
+                                                {% if app.is_active %}Aktif{% else %}Tidak Aktif{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('app_detail', app_id=app.id) }}" class="btn btn-outline" title="Lihat Detail">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('developer_app_edit', app_id=app.id) }}" class="btn btn-warning" title="Edit Aplikasi">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="GET" action="{{ url_for('developer_app_delete', app_id=app.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Hapus aplikasi ini? Data tidak bisa dikembalikan!')" title="Hapus Aplikasi">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📱</div>
+                            <h5>Belum Ada Aplikasi</h5>
+                            <p>Anda belum mempublikasikan aplikasi apapun. Mulai sekarang dengan mengupload aplikasi pertama Anda!</p>
+                            <a href="{{ url_for('developer_app_add') }}" class="btn btn-primary">
+                                <i class="bi bi-plus-lg"></i> Upload Aplikasi Pertama
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

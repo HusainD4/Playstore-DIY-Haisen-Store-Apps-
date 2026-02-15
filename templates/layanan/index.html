@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Layanan - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .services-wrapper {
+        min-height: calc(100vh - 68px - 100px);
+        padding: 40px 20px;
+        background: var(--bg-body);
+    }
+
+    .services-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .services-header i {
+        font-size: 3.5rem;
+        color: var(--primary);
+        margin-bottom: 16px;
+    }
+
+    .services-header h1 {
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 8px;
+        color: var(--text-main);
+    }
+
+    .services-header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .service-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 28px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+    }
+
+    .service-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(79, 70, 229, 0.15);
+    }
+
+    .service-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin: 0 auto 16px;
+    }
+
+    .service-card h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+
+    .service-card p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary);
+        font-weight: 500;
+        text-decoration: none;
+        margin-bottom: 24px;
+        transition: all 0.2s;
+    }
+
+    .back-link:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+
+    .info-box {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 32px;
+        text-align: center;
+    }
+
+    .info-box h4 {
+        color: #0369a1;
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .info-box p {
+        color: #075985;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .info-box a {
+        color: #0284c7;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="services-wrapper">
+    <div class="services-header">
+        <i class="bi bi-headset"></i>
+        <h1>Layanan Bantuan</h1>
+        <p>Pilih jenis layanan yang Anda butuhkan</p>
+    </div>
+
+    <div class="services-grid">
+        <a href="{{ url_for('layanan', service_type='akun_nonaktif') }}" class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-person-x"></i>
+            </div>
+            <h3>Akun Dinonaktifkan</h3>
+            <p>Permohonan pengaktifan kembali akun yang telah dinonaktifkan</p>
+        </a>
+
+        <a href="{{ url_for('layanan', service_type='aktivasi_ulang') }}" class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-arrow-clockwise"></i>
+            </div>
+            <h3>Aktivasi Ulang</h3>
+            <p>Permohonan aktivasi ulang akun yang tidak aktif</p>
+        </a>
+
+        <a href="{{ url_for('layanan', service_type='lupa_password') }}" class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-key"></i>
+            </div>
+            <h3>Lupa Password</h3>
+            <p>Bantuan untuk mereset kata sandi akun Anda</p>
+        </a>
+
+        <a href="{{ url_for('layanan', service_type='lupa_username') }}" class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-person-badge"></i>
+            </div>
+            <h3>Lupa Username</h3>
+            <p>Bantuan untuk mengingat atau mendapatkan username</p>
+        </a>
+
+        <a href="{{ url_for('layanan', service_type='verifikasi') }}" class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-patch-check"></i>
+            </div>
+            <h3>Verifikasi Akun</h3>
+            <p>Masalah terkait verifikasi identitas akun</p>
+        </a>
+
+        <a href="{{ url_for('layanan', service_type='hapus_akun') }}" class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-trash"></i>
+            </div>
+            <h3>Hapus Akun</h3>
+            <p>Permohonan penghapusan akun secara permanen</p>
+        </a>
+
+        <a href="{{ url_for('layanan', service_type='kendala_teknis') }}" class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-gear"></i>
+            </div>
+            <h3>Kendala Teknis</h3>
+            <p>Masalah teknis dengan aplikasi atau sistem</p>
+        </a>
+
+        <a href="{{ url_for('layanan', service_type='lainnya') }}" class="service-card">
+            <div class="service-icon">
+                <i class="bi bi-three-dots"></i>
+            </div>
+            <h3>Lainnya</h3>
+            <p>Pertanyaan atau masalah lainnya</p>
+        </a>
+    </div>
+
+    <div class="info-box">
+        <h4><i class="bi bi-clock me-2"></i>Jam Operasional</h4>
+        <p>Tim kami akan merespons dalam 24-48 jam kerja. Untuk pertanyaan mendesak, hubungi kami via <a href="mailto:haisen.bussines@gmail.com">email</a></p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Penghapusan Akun - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-wrapper {
+        display: block;
+        min-height: calc(100vh - 68px);
+        background: var(--bg-body);
+    }
+
+    .admin-content {
+        margin-left: 240px;
+        padding: 32px;
+        max-width: calc(100% - 240px);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 991px) {
+        .admin-content {
+            margin-left: 0;
+            padding: 24px;
+            padding-top: 70px;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .content-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .request-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        margin-bottom: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .request-card:hover {
+        box-shadow: var(--shadow-sm);
+    }
+
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+
+    .request-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .user-info h4 {
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 2px;
+    }
+
+    .user-info p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .request-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .request-reason {
+        color: var(--text-main);
+        line-height: 1.6;
+        padding: 12px 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        margin: 12px 0;
+    }
+
+    .request-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .btn-delete {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        background: #dc2626;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-delete:hover {
+        background: #b91c1c;
+    }
+
+    .btn-cancel {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        color: var(--text-muted);
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+        background: #f9fafb;
+        color: var(--text-main);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    {% include 'admin/sidebar.html' %}
+    
+    <!-- Admin Content -->
+    <div class="admin-content">
+        
+        <!-- Header -->
+        <div class="content-header">
+            <h1>Request Penghapusan Akun</h1>
+        </div>
+
+        {% if deletion_requests %}
+        <!-- Requests List -->
+        <div>
+            {% for request in deletion_requests %}
+            <div class="request-card">
+                <div class="request-header">
+                    <div class="request-user">
+                        <div class="user-avatar">
+                            {% if request.user.profile_photo %}
+                                <img src="{{ url_for('static', filename='uploads/profiles/' + request.user.profile_photo) }}" alt="{{ request.user.username }}">
+                            {% else %}
+                                {{ request.user.username[0]|upper }}
+                            {% endif %}
+                        </div>
+                        <div class="user-info">
+                            <h4>{{ request.user.username }}</h4>
+                            <p>{{ request.user.email }}</p>
+                        </div>
+                    </div>
+                    <div class="request-date">
+                        {{ request.created_at.strftime('%d %B %Y') if request.created_at else '-' }}
+                    </div>
+                </div>
+                <div class="request-reason">
+                    <strong>Alasan:</strong><br>
+                    {{ request.reason or 'Permintaan penghapusan akun' }}
+                </div>
+                <div class="request-actions">
+                    <button class="btn-cancel" onclick="confirm('Tolak permintaan ini?')">
+                        <i class="bi bi-x-lg"></i> Tolak
+                    </button>
+                    <button class="btn-delete">
+                        <i class="bi bi-trash"></i> Hapus Akun
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">🗑️</div>
+            <h3>Tidak Ada Request</h3>
+            <p class="text-muted">Belum ada permintaan penghapusan akun.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

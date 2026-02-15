@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profil - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-header {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 32px;
+        align-items: start;
+    }
+
+    .profile-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #4285f4, #1f73b7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .profile-photo img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+        max-width: 100% !important;
+    }
+
+    .profile-photo span {
+        line-height: 1;
+        font-size: 3rem;
+    }
+
+    .profile-info h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .profile-role {
+        display: inline-block;
+        background: #e3f2fd;
+        color: #1565c0;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+
+    .form-section {
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+    }
+
+    .form-section h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #1a1a1a;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #202124;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #4285f4;
+        box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+    }
+
+    .form-control.textarea {
+        resize: vertical;
+        min-height: 100px;
+        font-family: inherit;
+    }
+
+    .avatar-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 12px;
+    }
+
+    .avatar-option {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        border: 2px solid #dadce0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 2rem;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    .avatar-option:hover {
+        border-color: #4285f4;
+        box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+    }
+
+    .avatar-option.selected {
+        border-color: #4285f4;
+        background: #e3f2fd;
+        box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+    }
+
+    .avatar-option input[type="radio"] {
+        display: none;
+    }
+
+    .upload-area {
+        border: 2px dashed #dadce0;
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .upload-area:hover {
+        border-color: #4285f4;
+        background: #e3f2fd;
+    }
+
+    .upload-area i {
+        font-size: 2.5rem;
+        color: #4285f4;
+        margin-bottom: 8px;
+    }
+
+    .upload-area p {
+        margin: 8px 0;
+        color: #5f6368;
+    }
+
+    .social-input-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+    }
+
+    .social-input {
+        position: relative;
+    }
+
+    .social-input::before {
+        content: attr(data-icon);
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4285f4;
+        font-size: 1.1rem;
+    }
+
+    .social-input input {
+        padding-left: 40px !important;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #4285f4, #1f73b7);
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex: 1;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+    }
+
+    .btn-cancel {
+        background: white;
+        color: #4285f4;
+        padding: 12px 24px;
+        border: 2px solid #4285f4;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex: 1;
+    }
+
+    .btn-cancel:hover {
+        background: #f8f9fa;
+    }
+
+    .helper-text {
+        font-size: 0.85rem;
+        color: #5f6368;
+        margin-top: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Profile Container -->
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-photo" id="profilePhotoPreview">
+                        {% if user.role == 'developer' and user.profile_photo %}
+                            <img src="{{ url_for('static', filename='uploads/profiles/' + user.profile_photo) }}" alt="{{ user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% elif user.role == 'developer' %}
+                            <i class="bi bi-cloud-upload" style="font-size: 2rem; color: #4285f4;"></i>
+                        {% elif user.avatar_type %}
+                            <span style="font-size: 3rem;">{{ user.avatar_type }}</span>
+                        {% else %}
+                            {{ user.username[0]|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h2>{{ user.username }}</h2>
+                        <span class="profile-role">
+                            {% if user.role == 'admin' %}
+                                <i class="bi bi-shield-fill"></i> Administrator
+                            {% elif user.role == 'developer' %}
+                                <i class="bi bi-code-square"></i> Developer
+                            {% else %}
+                                <i class="bi bi-person-fill"></i> User
+                            {% endif %}
+                        </span>
+                        <p class="text-muted">{{ user.email }}</p>
+                        <p class="text-muted" style="font-size: 0.85rem;">Bergabung {{ user.created_at.strftime('%d %B %Y') }}</p>
+                    </div>
+                </div>
+
+                <!-- Edit Profile Form -->
+                <form method="POST" enctype="multipart/form-data">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h3><i class="bi bi-person"></i> Informasi Dasar</h3>
+                        
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                            <div class="helper-text">Nama yang terlihat di profil publik Anda</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                            <div class="helper-text">Email akun Anda (gunakan change-email untuk mengubah)</div>
+                        </div>
+                    </div>
+
+                    <!-- User Avatar Selection -->
+                    {% if user.role == 'user' %}
+                    <div class="form-section">
+                        <h3><i class="bi bi-image"></i> Pilih Avatar</h3>
+                        <div class="avatar-selector">
+                            {% set avatars = ['😀', '😎', '🐶', '🦁', '🐼', '🦊', '🐱', '🦄', '🐯', '🐻', '🦊', '🦋'] %}
+                            {% for avatar in avatars %}
+                            <label class="avatar-option {% if user.avatar_type == avatar %}selected{% endif %}">
+                                <input type="radio" name="avatar_type" value="{{ avatar }}" {% if user.avatar_type == avatar %}checked{% endif %}>
+                                <span>{{ avatar }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        <div class="helper-text" style="margin-top: 12px;">Pilih avatar yang mewakili Anda</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Developer Profile -->
+                    {% if user.role == 'developer' %}
+                    <div class="form-section">
+                        <h3><i class="bi bi-code-square"></i> Profil Developer</h3>
+                        
+                        <!-- Profile Photo Upload -->
+                        <div class="form-group">
+                            <label>Foto Profil Developer</label>
+                            <div class="upload-area" onclick="document.getElementById('profile_photo').click()">
+                                <i class="bi bi-cloud-upload"></i>
+                                <p><strong>Klik untuk upload</strong></p>
+                                <p>atau drag & drop file</p>
+                                <p style="font-size: 0.8rem; color: #9aa0a6;">JPG, PNG, WebP - Max 5MB</p>
+                            </div>
+                            <input type="file" id="profile_photo" name="profile_photo" accept="image/*" style="display: none;">
+                            <div class="helper-text" style="margin-top: 12px;">Logo atau foto Anda untuk profil developer</div>
+                        </div>
+                        
+                        <!-- Developer Description -->
+                        <div class="form-group">
+                            <label for="developer_description">Biografi Developer</label>
+                            <textarea class="form-control textarea" id="developer_description" name="developer_description" placeholder="Ceritakan tentang Anda sebagai developer...">{{ user.developer_description or '' }}</textarea>
+                            <div class="helper-text">Deskripsi singkat tentang Anda dan keahlian Anda (opsional)</div>
+                        </div>
+                        
+                        <!-- Social Media -->
+                        <div class="form-group">
+                            <label>Media Sosial & Kontak</label>
+                            <div class="social-input-group">
+                                <div class="social-input" data-icon="📷">
+                                    <input type="url" class="form-control" name="social_instagram" placeholder="Instagram" value="{{ social_media.get('instagram', '') }}">
+                                </div>
+                                <div class="social-input" data-icon="𝕏">
+                                    <input type="url" class="form-control" name="social_twitter" placeholder="X / Twitter" value="{{ social_media.get('twitter', '') }}">
+                                </div>
+                                <div class="social-input" data-icon="🐙">
+                                    <input type="url" class="form-control" name="social_github" placeholder="GitHub" value="{{ social_media.get('github', '') }}">
+                                </div>
+                                <div class="social-input" data-icon="👔">
+                                    <input type="url" class="form-control" name="social_linkedin" placeholder="LinkedIn" value="{{ social_media.get('linkedin', '') }}">
+                                </div>
+                                <div class="social-input" data-icon="🌐">
+                                    <input type="url" class="form-control" name="social_website" placeholder="Website" value="{{ social_media.get('website', '') }}">
+                                </div>
+                            </div>
+                            <div class="helper-text" style="margin-top: 12px;">Tambahkan kontak sosial media Anda (opsional)</div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="btn-group">
+                        <button type="submit" class="btn-save">
+                            <i class="bi bi-check-lg"></i> Simpan Perubahan
+                        </button>
+                        <a href="{{ url_for('profile') }}" class="btn-cancel" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-x-lg"></i> Batal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Avatar selector visual feedback
+    document.querySelectorAll('.avatar-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+
+    // File upload area
+    const uploadArea = document.querySelector('.upload-area');
+    const profilePhotoInput = document.getElementById('profile_photo');
+    
+    if (uploadArea && profilePhotoInput) {
+        // Preview image when file is selected
+        profilePhotoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const profilePhotoPreview = document.getElementById('profilePhotoPreview');
+                    profilePhotoPreview.innerHTML = `<img src="${event.target.result}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#4285f4';
+            uploadArea.style.background = '#e3f2fd';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#dadce0';
+            uploadArea.style.background = '#f8f9fa';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            profilePhotoInput.files = files;
+            // Trigger change event to show preview
+            profilePhotoInput.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,427 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ developer.username }} - Developer Profile{% endblock %}
+
+{% block extra_css %}
+<style>
+    .developer-header {
+        background: linear-gradient(135deg, #4285f4, #1f73b7);
+        color: white;
+        padding: 48px 24px;
+        border-radius: 16px;
+        margin-bottom: 32px;
+    }
+
+    .developer-header-content {
+        display: flex;
+        gap: 32px;
+        align-items: start;
+        max-width: 900px;
+    }
+
+    .developer-avatar {
+        width: 160px;
+        height: 160px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 3px solid rgba(255, 255, 255, 0.5);
+        position: relative;
+    }
+
+    .developer-avatar img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+        max-width: 100% !important;
+    }
+
+    .developer-avatar.no-photo {
+        background: rgba(255, 255, 255, 0.3);
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .developer-info {
+        flex: 1;
+    }
+
+    .developer-info h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .developer-username {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-bottom: 16px;
+    }
+
+    .stats-row {
+        display: flex;
+        gap: 32px;
+        margin-bottom: 16px;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .social-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-size: 1rem;
+    }
+
+    .social-link:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .btn-follow {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 10px 20px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-follow:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: white;
+    }
+
+    .section-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #1a1a1a;
+    }
+
+    .bio-text {
+        color: #5f6368;
+        line-height: 1.6;
+        margin-bottom: 16px;
+    }
+
+    .app-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .app-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .app-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(66, 133, 244, 0.15);
+    }
+
+    .app-icon {
+        width: 100%;
+        height: 140px;
+        background: linear-gradient(135deg, #4285f4, #1f73b7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        overflow: hidden;
+    }
+
+    .app-icon img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+        max-width: 100% !important;
+    }
+
+    .app-info {
+        padding: 12px;
+    }
+
+    .app-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+        color: #1a1a1a;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .app-meta {
+        display: flex;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #5f6368;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 48px 24px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        color: #5f6368;
+    }
+
+    .empty-state-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .developer-header-content {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 16px;
+        }
+
+        .developer-info h1 {
+            font-size: 1.8rem;
+        }
+
+        .stats-row {
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn-follow {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    {% include 'navbar.html' %}
+
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Developer Header -->
+            <div class="developer-header">
+                <div class="developer-header-content">
+                    <div class="developer-avatar {% if not developer.profile_photo %}no-photo{% endif %}">
+                        {% if developer.profile_photo %}
+                            <img src="{{ url_for('static', filename='uploads/profiles/' + developer.profile_photo) }}" alt="{{ developer.username }}">
+                        {% else %}
+                            {{ developer.username[0]|upper }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="developer-info">
+                        <h1>{{ developer.username }}</h1>
+                        <div class="developer-username">👨‍💻 Developer</div>
+                        
+                        <div class="stats-row">
+                            <div class="stat">
+                                <div>
+                                    <div class="stat-value">{{ apps|length }}</div>
+                                    <div class="stat-label">Aplikasi</div>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <div>
+                                    <div class="stat-value">{{ followers_count }}</div>
+                                    <div class="stat-label">Pengikut</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if developer.developer_description %}
+                        <p style="margin-bottom: 12px; line-height: 1.5;">{{ developer.developer_description }}</p>
+                        {% endif %}
+                        
+                        <!-- Social Media Links -->
+                        {% if social_media %}
+                        <div class="social-links">
+                            {% if social_media.get('instagram') %}
+                            <a href="{{ social_media['instagram'] }}" target="_blank" class="social-link" title="Instagram">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            {% endif %}
+                            {% if social_media.get('twitter') %}
+                            <a href="{{ social_media['twitter'] }}" target="_blank" class="social-link" title="X / Twitter">
+                                <i class="bi bi-twitter-x"></i>
+                            </a>
+                            {% endif %}
+                            {% if social_media.get('github') %}
+                            <a href="{{ social_media['github'] }}" target="_blank" class="social-link" title="GitHub">
+                                <i class="bi bi-github"></i>
+                            </a>
+                            {% endif %}
+                            {% if social_media.get('linkedin') %}
+                            <a href="{{ social_media['linkedin'] }}" target="_blank" class="social-link" title="LinkedIn">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            {% endif %}
+                            {% if social_media.get('website') %}
+                            <a href="{{ social_media['website'] }}" target="_blank" class="social-link" title="Website">
+                                <i class="bi bi-globe"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Follow Button -->
+                        {% if current_user.is_authenticated %}
+                            {% set is_following = user_following_developer if user_following_developer is defined else false %}
+                            {% if is_following %}
+                            <div class="action-buttons">
+                                <form method="POST" action="{{ url_for('unfollow_developer', developer_id=developer.id) }}" style="margin: 0; width: 100%;">
+                                    <button type="submit" class="btn-follow" style="width: 100%; justify-content: center;">
+                                        <i class="bi bi-person-check-fill"></i> Berhenti Ikuti
+                                    </button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div class="action-buttons">
+                                <form method="POST" action="{{ url_for('follow_developer', developer_id=developer.id) }}" style="margin: 0; width: 100%;">
+                                    <button type="submit" class="btn-follow" style="width: 100%; justify-content: center;">
+                                        <i class="bi bi-person-plus"></i> Ikuti Developer
+                                    </button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        <div class="action-buttons">
+                            <a href="{{ url_for('login') }}" class="btn-follow" style="text-decoration: none; width: 100%; justify-content: center;">
+                                <i class="bi bi-lock"></i> Login untuk Ikuti
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications Section -->
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="bi bi-grid-3x3-gap"></i> Aplikasi
+                </div>
+                
+                {% if apps %}
+                <div class="app-grid">
+                    {% for app in apps %}
+                    <a href="{{ url_for('app_detail', app_id=app.id) }}" class="app-card" style="text-decoration: none; color: inherit;">
+                        <div class="app-icon">
+                            {% if app.icon %}
+                                <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}">
+                            {% else %}
+                                <i class="bi bi-app"></i>
+                            {% endif %}
+                        </div>
+                        <div class="app-info">
+                            <div class="app-title">{{ app.title }}</div>
+                            <div class="app-meta">
+                                <span><i class="bi bi-download"></i> {{ app.downloads }}</span>
+                                <span><i class="bi bi-star-fill text-warning"></i> {{ app.rating or '-' }}</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📱</div>
+                    <h5>Belum Ada Aplikasi</h5>
+                    <p>Developer ini belum mempublikasikan aplikasi apapun</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- About Section -->
+            {% if developer.developer_description or social_media %}
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="bi bi-info-circle"></i> Tentang Developer
+                </div>
+                
+                {% if developer.developer_description %}
+                <div class="bio-text">
+                    {{ developer.developer_description }}
+                </div>
+                {% else %}
+                <p class="text-muted">Tidak ada data</p>
+                {% endif %}
+                
+                {% if not social_media %}
+                <p class="text-muted" style="margin-top: 16px;">
+                    <i class="bi bi-info-circle"></i> Developer ini belum menambahkan media sosial
+                </p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

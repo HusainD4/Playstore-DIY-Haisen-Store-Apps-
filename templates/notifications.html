@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifikasi - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-item {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        border-left: 4px solid #4285f4;
+        transition: all 0.3s;
+        display: flex;
+        align-items: start;
+        gap: 12px;
+    }
+
+    .notification-item.unread {
+        background: #e3f2fd;
+        border-left-color: #ea4335;
+    }
+
+    .notification-item:hover {
+        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.1);
+        transform: translateX(4px);
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .notification-icon.update {
+        background: linear-gradient(135deg, #fbbc05, #f57c00);
+        color: white;
+    }
+
+    .notification-icon.new-app {
+        background: linear-gradient(135deg, #4285f4, #1f73b7);
+        color: white;
+    }
+
+    .notification-icon.review {
+        background: linear-gradient(135deg, #34a853, #0d652d);
+        color: white;
+    }
+
+    .notification-content {
+        flex-grow: 1;
+    }
+
+    .notification-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .notification-message {
+        color: #5f6368;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .notification-time {
+        font-size: 0.85rem;
+        color: #9aa0a6;
+    }
+
+    .notification-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .btn-read {
+        padding: 6px 12px;
+        background: transparent;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+    }
+
+    .btn-read:hover {
+        background: #f8f9fa;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 48px 24px;
+        background: #f8f9fa;
+        border-radius: 16px;
+        color: #5f6368;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    .notifications-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .notification-badge {
+        background: #ea4335;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        background: white;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+        background: #4285f4;
+        color: white;
+        border-color: #4285f4;
+    }
+
+    .filter-btn:hover {
+        background: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Header -->
+            <div class="notifications-header">
+                <div>
+                    <h1 class="h2 mb-1 fw-700">🔔 Notifikasi</h1>
+                    <p class="text-muted mb-0">Pantau update terbaru dari developer yang Anda ikuti</p>
+                </div>
+                <div>
+                    {% if unread_count > 0 %}
+                        <span class="notification-badge">{{ unread_count }} Baru</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Filter Buttons -->
+            {% if notifications %}
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterNotifications('all')">
+                    <i class="bi bi-funnel"></i> Semua
+                </button>
+                <button class="filter-btn" onclick="filterNotifications('unread')">
+                    <i class="bi bi-circle-fill"></i> Belum Dibaca
+                </button>
+                <button class="filter-btn" onclick="filterNotifications('update')">
+                    <i class="bi bi-arrow-clockwise"></i> Update
+                </button>
+                <button class="filter-btn" onclick="filterNotifications('new')">
+                    <i class="bi bi-star"></i> Aplikasi Baru
+                </button>
+            </div>
+
+            <!-- Mark All as Read -->
+            {% if unread_count > 0 %}
+            <form method="POST" action="{{ url_for('mark_all_notifications_read') }}" style="margin-bottom: 24px;">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-check-all"></i> Tandai Semua Sudah Dibaca
+                </button>
+            </form>
+            {% endif %}
+            {% endif %}
+
+            <!-- Notifications List -->
+            {% if notifications %}
+            <div class="list-group">
+                {% for notification in notifications %}
+                <div class="notification-item {% if not notification.is_read %}unread{% endif %}" data-type="{{ notification.notification_type }}">
+                    <!-- Icon -->
+                    <div class="notification-icon {% if notification.notification_type == 'app_update' %}update{% elif notification.notification_type == 'new_app' %}new-app{% else %}review{% endif %}">
+                        {% if notification.notification_type == 'app_update' %}
+                            <i class="bi bi-arrow-clockwise"></i>
+                        {% elif notification.notification_type == 'new_app' %}
+                            <i class="bi bi-star"></i>
+                        {% else %}
+                            <i class="bi bi-chat-dots"></i>
+                        {% endif %}
+                    </div>
+
+                    <!-- Content -->
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            {% if notification.app %}
+                                {{ notification.app.title }}
+                            {% else %}
+                                Notifikasi
+                            {% endif %}
+                        </div>
+                        <div class="notification-message">
+                            {{ notification.message }}
+                        </div>
+                        <div class="notification-time">
+                            <i class="bi bi-clock"></i> {{ notification.created_at.strftime('%d %b %Y, %H:%M') }}
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="notification-actions">
+                        {% if notification.app %}
+                        <a href="{{ url_for('app_detail', app_id=notification.app.id) }}" class="btn-read">
+                            <i class="bi bi-eye"></i> Lihat
+                        </a>
+                        {% endif %}
+                        {% if not notification.is_read %}
+                        <form method="POST" action="{{ url_for('mark_notification_read', notification_id=notification.id) }}" style="margin: 0;">
+                            <button type="submit" class="btn-read">
+                                <i class="bi bi-check"></i> Tandai
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">🔔</div>
+                <h5>Tidak Ada Notifikasi</h5>
+                <p>Anda akan menerima notifikasi saat developer yang Anda ikuti melakukan update atau meluncurkan aplikasi baru</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">
+                    <i class="bi bi-search"></i> Jelajahi Aplikasi & Developer
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterNotifications(type) {
+        const items = document.querySelectorAll('.notification-item');
+        const buttons = document.querySelectorAll('.filter-btn');
+        
+        // Update active button
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.closest('.filter-btn').classList.add('active');
+        
+        // Filter items
+        items.forEach(item => {
+            if (type === 'all') {
+                item.style.display = 'flex';
+            } else if (type === 'unread') {
+                item.style.display = item.classList.contains('unread') ? 'flex' : 'none';
+            } else if (type === 'update') {
+                item.style.display = item.dataset.type === 'app_update' ? 'flex' : 'none';
+            } else if (type === 'new') {
+                item.style.display = item.dataset.type === 'new_app' ? 'flex' : 'none';
+            }
+        });
+    }
+</script>
+
+{% endblock %}

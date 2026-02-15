@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Pengguna - Haisen Official{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    <div class="section-card" style="margin-top:20px">
+        <h3>Edit Pengguna</h3>
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Aplikasi Pengguna</label>
+                {% if user.apps and user.apps|length > 0 %}
+                    <ul style="margin:0; padding-left: 18px;">
+                    {% for app in user.apps %}
+                        <li><a href="{{ url_for('app_detail', app_id=app.id) }}" target="_blank">{{ app.title }}</a></li>
+                    {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="text-muted">(Belum ada aplikasi)</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password (kosongkan bila tidak ingin mengubah)</label>
+                <input type="password" name="password" class="form-control" placeholder="Masukkan password baru jika ingin mengganti">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Role</label>
+                <select name="role" class="form-select">
+                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                    <option value="developer" {% if user.role == 'developer' %}selected{% endif %}>Developer</option>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="submit" class="btn-primary">Simpan</button>
+                <a href="{{ url_for('admin_users') }}" class="btn-outline">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

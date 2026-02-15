@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Pencarian - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- Search Page Specific Styles --- */
+    .search-header {
+        padding: 40px 0 20px;
+    }
+
+    .result-item {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        margin-bottom: 12px;
+    }
+
+    .result-item:hover {
+        border-color: #D1D5DB;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        transform: translateY(-1px);
+    }
+
+    .result-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        object-fit: cover;
+        margin-right: 20px;
+        flex-shrink: 0;
+        display: block;
+        max-width: 100%;
+    }
+
+    .result-placeholder {
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background-color: #F3F4F6;
+        margin-right: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .result-info {
+        flex-grow: 1;
+        min-width: 0; /* Prevents text overflow issues */
+    }
+
+    .result-title {
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .result-meta {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .result-actions {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .badge-clean {
+        background: #F3F4F6;
+        color: var(--text-main);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    /* Empty State */
+    .empty-search {
+        background: var(--bg-white);
+        border-radius: 16px;
+        padding: 80px 20px;
+        text-align: center;
+        border: 1px dashed var(--border);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    
+    <!-- Header -->
+    <div class="search-header">
+        <h1 class="fw-bold mb-2">Hasil Pencarian</h1>
+        {% if query %}
+        <p class="text-muted">
+            Menampilkan hasil untuk: <span class="fw-bold text-dark">"{{ query }}"</span>
+        </p>
+        {% else %}
+        <p class="text-muted">Menampilkan semua aplikasi yang tersedia.</p>
+        {% endif %}
+    </div>
+
+    <!-- Search Results List -->
+    {% if apps %}
+    <div class="results-list">
+        {% for app in apps %}
+        <a href="{{ url_for('app_detail', app_id=app.id) }}" class="text-decoration-none">
+            <div class="result-item">
+                {% if app.icon %}
+                <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}" class="result-icon">
+                {% else %}
+                <div class="result-placeholder">
+                    <i class="bi bi-app"></i>
+                </div>
+                {% endif %}
+                
+                <div class="result-info">
+                    <h6 class="result-title">{{ app.title }}</h6>
+                    <div class="result-meta">
+                        {{ app.developer or 'Developer' }} 
+                        <span class="mx-2" style="color: #D1D5DB;">•</span> 
+                        {{ app.category.name if app.category else 'Umum' }}
+                    </div>
+                </div>
+                
+                <div class="result-actions ps-3">
+                    <div class="badge-clean mb-1">
+                        {{ app.price }}
+                    </div>
+                    <div class="text-muted small">
+                        <i class="bi bi-download me-1"></i> {{ app.downloads }}
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    
+    <!-- Empty State -->
+    <div class="empty-search">
+        <div style="margin-bottom: 24px;">
+            <i class="bi bi-search" style="font-size: 4rem; color: #E5E7EB;"></i>
+        </div>
+        <h3 class="fw-bold mb-3 text-dark">Tidak ada hasil ditemukan</h3>
+        <p class="text-muted mb-4 max-w-md mx-auto">
+            Kami tidak dapat menemukan aplikasi yang cocok dengan pencarian Anda. Coba kata kunci lain.
+        </p>
+        <div>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="bi bi-house me-2"></i> Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

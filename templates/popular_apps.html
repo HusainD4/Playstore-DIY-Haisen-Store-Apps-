@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block title %}Aplikasi Populer - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+        padding: 40px 0;
+        margin-bottom: 40px;
+    }
+
+    .page-title {
+        color: white;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        color: rgba(255,255,255,0.9);
+        font-size: 1rem;
+    }
+
+    /* App Card */
+    .app-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: all 0.2s ease;
+        height: 100%;
+    }
+
+    .app-card:hover {
+        border-color: #D1D5DB;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transform: translateY(-2px);
+    }
+
+    .app-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 1px solid #eee;
+        background: #f8f9fa;
+    }
+
+    .app-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 14px;
+    }
+
+    .app-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .app-title {
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 4px;
+        font-size: 1rem;
+    }
+
+    .app-developer {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+
+    .app-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .app-rating {
+        color: #fbbc04;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .app-downloads {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .app-price {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 0.95rem;
+        white-space: nowrap;
+    }
+
+    /* Rank Badge */
+    .rank-badge {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    .rank-1 {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        color: white;
+    }
+
+    .rank-2 {
+        background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+        color: white;
+    }
+
+    .rank-3 {
+        background: linear-gradient(135deg, #CD7F32 0%, #B87333 100%);
+        color: white;
+    }
+
+    .rank-other {
+        background: #f1f3f4;
+        color: #5f6368;
+    }
+
+    /* Stats */
+    .stats-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .stats-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .stats-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="max-width-container">
+        <h1 class="page-title">
+            <i class="bi bi-fire me-2"></i> Aplikasi Paling Populer
+        </h1>
+        <p class="page-subtitle">Temukan aplikasi dan game paling populer di platform kami</p>
+    </div>
+</div>
+
+<div class="max-width-container pb-5">
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-4">
+            <div class="stats-card">
+                <div class="stats-number">{{ apps|length }}</div>
+                <div class="stats-label">Total Aplikasi</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_downloads|format_number }}</div>
+                <div class="stats-label">Total Unduhan</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="stats-card">
+                <div class="stats-number">{{ "%.1f"|format(avg_rating) }}</div>
+                <div class="stats-label">Rating Rata-rata</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Apps List -->
+    {% if apps %}
+    <div class="row g-3">
+        {% for app in apps %}
+        <div class="col-12">
+            <a href="{{ url_for('app_detail', app_id=app.id) }}" class="text-decoration-none">
+                <div class="app-card">
+                    <!-- Rank Badge -->
+                    <div class="rank-badge {% if loop.index <= 3 %}rank-{{ loop.index }}{% else %}rank-other{% endif %}">
+                        {{ loop.index }}
+                    </div>
+                    
+                    <!-- App Icon -->
+                    {% if app.icon %}
+                    <div class="app-icon">
+                        <img src="{{ url_for('static', filename='uploads/' + app.icon) }}" alt="{{ app.title }}">
+                    </div>
+                    {% else %}
+                    <div class="app-icon bg-light d-flex align-items-center justify-content-center">
+                        <i class="bi bi-app fs-2 text-muted"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- App Info -->
+                    <div class="app-info">
+                        <h5 class="app-title">{{ app.title }}</h5>
+                        <p class="app-developer">{{ app.developer or 'Developer' }}</p>
+                        <div class="app-meta">
+                            <span class="app-rating">
+                                <i class="bi bi-star-fill"></i> {{ app.rating }}
+                            </span>
+                            <span class="app-downloads">
+                                <i class="bi bi-download me-1"></i> {{ app.downloads|format_number }} unduhan
+                            </span>
+                            {% if app.category %}
+                            <span class="badge bg-light text-dark" style="font-size: 0.75rem;">
+                                {{ app.category.name }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Price -->
+                    <div class="app-price">
+                        {{ app.price }}
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="bi bi-inbox"></i>
+        </div>
+        <h4>Belum Ada Aplikasi</h4>
+        <p class="text-muted">Saat ini belum ada aplikasi populer untuk ditampilkan.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">
+            <i class="bi bi-arrow-left me-2"></i> Kembali ke Beranda
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Format number function
+    function formatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
+    }
+    
+    // Add format_number filter for Jinja
+    // This is a simple client-side solution
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Lokasi Tujuan - Haisen Official{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    <div class="section-card" style="margin-top:20px">
+        <h3>Lokasi Tujuan</h3>
+        <p class="text-muted">Berikut lokasi tujuan yang tersimpan.</p>
+        <div style="margin-top:12px;">
+            {% if location %}
+                <pre style="background:#f8fafc;padding:12px;border-radius:8px;border:1px solid var(--border);">{{ location }}</pre>
+                {% set coords = None %}
+                {% if ',' in location %}
+                    {% set parts = location.split(',') %}
+                    {% if parts|length >= 2 %}
+                        {% set lat = parts[0].strip() %}
+                        {% set lng = parts[1].strip() %}
+                        {% set coords = lat + ',' + lng %}
+                    {% endif %}
+                {% endif %}
+                <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+                    {% if coords %}
+                        <a href="https://www.google.com/maps?q={{ coords }}" target="_blank" class="btn-primary">Buka di Google Maps</a>
+                    {% else %}
+                        <a href="https://www.google.com/maps/search/{{ location | url_encode }}" target="_blank" class="btn-primary">Cari di Google Maps</a>
+                    {% endif %}
+                    {% if back == 'review' and obj_id %}
+                        <a href="{{ url_for('admin_reviews') }}#review-{{ obj_id }}" class="btn-outline">Lihat di Daftar Review</a>
+                    {% elif back == 'user' and obj_id %}
+                        <a href="{{ url_for('admin_users') }}#user-{{ obj_id }}" class="btn-outline">Lihat di Daftar Pengguna</a>
+                    {% else %}
+                        <a href="{{ url_for('admin_reviews') if back == 'review' else url_for('admin_users') }}" class="btn-outline">Kembali</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <p class="empty-text">Tidak ada lokasi tujuan yang tersimpan.</p>
+                    <a href="{{ url_for('admin_users') }}" class="btn-outline">Kembali</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

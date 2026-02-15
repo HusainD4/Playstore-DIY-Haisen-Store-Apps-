@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Review - Haisen Official{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    <div class="section-card" style="margin-top:20px">
+        <h3>Edit Review</h3>
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Rating (1-5)</label>
+                <input type="number" name="rating" class="form-control" min="1" max="5" value="{{ review.rating }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Komentar</label>
+                <textarea name="comment" class="form-control" rows="4">{{ review.comment or '' }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Aplikasi</label>
+                {% if review.app %}
+                <div><a href="{{ url_for('app_detail', app_id=review.app.id) }}" target="_blank">{{ review.app.title }}</a></div>
+                {% else %}
+                <div class="text-muted">(Aplikasi tidak tersedia)</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Balasan Admin</label>
+                <textarea name="admin_reply" class="form-control" rows="3">{{ review.admin_reply or '' }}</textarea>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="submit" class="btn-primary">Simpan</button>
+                <a href="{{ url_for('admin_reviews') }}" class="btn-outline">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

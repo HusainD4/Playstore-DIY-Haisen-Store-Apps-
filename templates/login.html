@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}Masuk - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- Login Page Specific Styles --- */
+    .login-wrapper {
+        min-height: calc(100vh - 68px - 100px); /* Adjust based on header/footer height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .login-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: var(--shadow-md);
+        width: 100%;
+        max-width: 420px;
+    }
+
+    .login-logo {
+        color: var(--primary);
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+
+    /* Input Group Styling */
+    .input-group-text {
+        background-color: #F9FAFB;
+        border: 1px solid var(--border);
+        border-right: none;
+        color: var(--text-muted);
+    }
+
+    .form-control {
+        border-left: none; /* Merge with icon */
+    }
+
+    /* Handle border color on focus */
+    .input-group:focus-within .input-group-text {
+        border-color: var(--primary);
+        background-color: #fff;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: none; /* Remove default bootstrap shadow */
+    }
+    
+    .input-group:focus-within .form-control {
+        box-shadow: 0 0 0 3px rgba(246, 82, 63, 0.1); /* Custom focus ring */
+    }
+
+    .login-header h2 {
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-header p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+    .back-link {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        color: var(--primary);
+    }
+
+    /* Help Center Section */
+    .help-center-section {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 24px;
+    }
+
+    .help-center-section h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0369a1;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .help-center-section h5 i {
+        font-size: 1.25rem;
+    }
+
+    .help-links {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .help-link-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: white;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        border: 1px solid #e0e7ff;
+    }
+
+    .help-link-item:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        transform: translateX(4px);
+    }
+
+    .help-link-item i {
+        font-size: 1.1rem;
+        color: var(--primary);
+    }
+
+    .help-link-item:hover i {
+        color: white;
+    }
+
+    .help-link-item.email-link i {
+        color: #dc2626;
+    }
+
+    .help-link-item.email-link:hover i {
+        color: white;
+    }
+
+    /* Password Toggle Button */
+    .password-toggle {
+        position: absolute;
+        right: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 4px 8px;
+        z-index: 10;
+        font-size: 1.1rem;
+    }
+
+    .password-toggle:hover {
+        color: var(--primary);
+    }
+
+    .password-input-wrapper {
+        position: relative;
+    }</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    <div class="login-wrapper">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-6 col-lg-5">
+                
+                <div class="login-card">
+                    <div class="text-center login-header">
+                        <i class="bi bi-hexagon-fill login-logo"></i>
+                        <h2>Selamat Datang</h2>
+                        <p>Masuk ke akun Haisen Official Anda</p>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group password-input-wrapper">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="bi bi-eye-slash" id="password-toggle-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            Masuk
+                        </button>
+                    </form>
+                    
+                    <script>
+                        // Toggle password visibility
+                        function togglePassword(fieldId) {
+                            const field = document.getElementById(fieldId);
+                            const toggleBtn = document.getElementById(fieldId + '-toggle-icon');
+                            
+                            if (field.type === 'password') {
+                                field.type = 'text';
+                                toggleBtn.classList.remove('bi-eye-slash');
+                                toggleBtn.classList.add('bi-eye');
+                            } else {
+                                field.type = 'password';
+                                toggleBtn.classList.remove('bi-eye');
+                                toggleBtn.classList.add('bi-eye-slash');
+                            }
+                        }
+                    </script>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-3" style="font-size: 0.9rem;">Belum punya akun?</p>
+                        <a href="{{ url_for('register') }}" class="btn btn-outline w-100 py-2">
+                            Daftar Sekarang
+                        </a>
+                    </div>
+                    
+                    <div class="text-center mt-4 pt-3" style="border-top: 1px solid #f3f4f6;">
+                        <a href="{{ url_for('index') }}" class="back-link">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+                        </a>
+                    </div>
+
+                    <!-- Help Center Section
+                    <div class="help-center-section">
+                        <h5><i class="bi bi-question-circle"></i> Butuh Bantuan?</h5>
+                        <div class="help-links">
+                            <a href="{{ url_for('help_center') }}" class="help-link-item">
+                                <i class="bi bi-book"></i>
+                                <span>Lihat Pusat Bantuan</span>
+                            </a>
+                            <a href="mailto:haisen.bussines@gmail.com" class="help-link-item email-link">
+                                <i class="bi bi-envelope"></i>
+                                <span>Hubungi Admin via Email</span>
+                            </a>
+                            <a href="{{ url_for('help_center') }}#contact-form" class="help-link-item">
+                                <i class="bi bi-send"></i>
+                                <span>Kirim Form Bantuan</span>
+                            </a>
+                        </div>
+                    </div> -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+
+{% block title %}Permohonan Bantuan - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .help-requests-wrapper {
+        min-height: calc(100vh - 68px - 100px);
+        padding: 20px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .stat-card h3 {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .stat-card .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .stat-card.pending .stat-value { color: #f59e0b; }
+    .stat-card.in-progress .stat-value { color: #3b82f6; }
+    .stat-card.resolved .stat-value { color: #10b981; }
+    .stat-card.closed .stat-value { color: #6b7280; }
+
+    .help-requests-table {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .help-requests-table thead {
+        background: var(--bg-body);
+    }
+
+    .help-requests-table th {
+        padding: 16px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .help-requests-table td {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    .help-requests-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .help-requests-table tr:hover {
+        background: var(--bg-body);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-badge.pending {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-badge.in-progress {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .status-badge.resolved {
+        background: #d1fae5;
+        color: #059669;
+    }
+
+    .status-badge.closed {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .issue-type {
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .request-id {
+        font-family: monospace;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .created-at {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .view-btn {
+        padding: 8px 16px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .view-btn:hover {
+        background: var(--primary-hover);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .filter-tab {
+        padding: 8px 16px;
+        background: var(--bg-body);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .filter-tab:hover {
+        background: var(--bg-white);
+        border-color: var(--primary);
+    }
+
+    .filter-tab.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="help-requests-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Permohonan Bantuan</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+            <i class="bi bi-arrow-left me-2"></i>Kembali ke Dashboard
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Permohonan</h3>
+            <div class="stat-value">{{ total_requests }}</div>
+        </div>
+        <div class="stat-card pending">
+            <h3>Menunggu</h3>
+            <div class="stat-value">{{ pending_requests }}</div>
+        </div>
+        <div class="stat-card in-progress">
+            <h3>Diproses</h3>
+            <div class="stat-value">{{ in_progress_requests }}</div>
+        </div>
+        <div class="stat-card resolved">
+            <h3>Terselesaikan</h3>
+            <div class="stat-value">{{ resolved_requests }}</div>
+        </div>
+        <div class="stat-card closed">
+            <h3>Tertutup</h3>
+            <div class="stat-value">{{ closed_requests }}</div>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterRequests('all')">Semua</button>
+        <button class="filter-tab" onclick="filterRequests('pending')">Menunggu</button>
+        <button class="filter-tab" onclick="filterRequests('in_progress')">Diproses</button>
+        <button class="filter-tab" onclick="filterRequests('resolved')">Terselesaikan</button>
+        <button class="filter-tab" onclick="filterRequests('closed')">Tertutup</button>
+    </div>
+
+    <!-- Help Requests Table -->
+    <div class="help-requests-table">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Jenis Masalah</th>
+                    <th>Status</th>
+                    <th>Tanggal</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if help_requests %}
+                    {% for request in help_requests %}
+                    <tr data-status="{{ request.status }}">
+                        <td>
+                            <span class="request-id">#{{ request.id }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ request.name }}</strong>
+                        </td>
+                        <td>
+                            <a href="mailto:{{ request.email }}" class="text-decoration-none">
+                                {{ request.email }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="issue-type">{{ request.issue_description }}</span>
+                        </td>
+                        <td>
+                            <span class="status-badge {{ request.status }}">
+                                {{ request.status|replace('_', ' ')|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="created-at">{{ request.created_at.strftime('%d %b %Y') }}</span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_help_request_detail', request_id=request.id) }}" class="view-btn">
+                                <i class="bi bi-eye"></i> Detail
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="bi bi-inbox"></i>
+                            <p>Belum ada permohonan bantuan</p>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function filterRequests(status) {
+    // Update active tab
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    // Filter table rows
+    const rows = document.querySelectorAll('.help-requests-table tbody tr');
+    rows.forEach(row => {
+        if (status === 'all') {
+            row.style.display = '';
+        } else {
+            if (row.getAttribute('data-status') === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

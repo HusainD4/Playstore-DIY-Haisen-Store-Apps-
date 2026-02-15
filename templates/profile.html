@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil Saya - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- Profile Header --- */
+    .profile-section-header {
+        margin-bottom: 32px;
+    }
+
+    .profile-section-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-main);
+        margin-bottom: 8px;
+    }
+    
+    .profile-section-header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    /* --- Profile Summary / Avatar --- */
+    .profile-summary {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 32px;
+        box-shadow: var(--shadow-sm);
+        flex-wrap: wrap;
+    }
+
+    .user-avatar-lg {
+        width: 80px;
+        height: 80px;
+        background-color: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(246, 82, 63, 0.3);
+        flex-shrink: 0;
+        overflow: hidden;
+        position: relative;
+        line-height: 1;
+    }
+
+    .user-avatar-lg img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+        max-width: 100% !important;
+    }
+
+    .user-avatar-lg span {
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-summary-info {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .profile-summary-info h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .profile-summary-info p {
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .profile-summary-actions {
+        width: 100%;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .profile-summary-actions .btn {
+        margin: 0;
+    }
+
+    .btn-gradient-primary {
+        background: linear-gradient(135deg, #4285f4, #1f73b7) !important;
+        color: white !important;
+        border: none !important;
+        padding: 10px 20px !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        white-space: nowrap;
+    }
+
+    .btn-gradient-primary:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3) !important;
+        color: white !important;
+        text-decoration: none !important;
+    }
+
+    .btn-outline-primary {
+        background: white !important;
+        color: #4285f4 !important;
+        border: 2px solid #4285f4 !important;
+        padding: 8px 18px !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        white-space: nowrap;
+    }
+
+    .btn-outline-primary:hover {
+        background: #f8f9fa !important;
+        color: #4285f4 !important;
+        text-decoration: none !important;
+    }
+
+    /* --- Profile Cards --- */
+    .profile-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Info Rows */
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #F3F4F6;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .info-value {
+        color: var(--text-main);
+        font-weight: 500;
+        text-align: right;
+    }
+
+    /* Action Buttons (Full Width) */
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* Align text left */
+        gap: 12px;
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+        margin-bottom: 12px;
+        border: 1px solid transparent;
+    }
+
+    .action-btn:last-child {
+        margin-bottom: 0;
+    }
+
+    .action-btn-primary {
+        background: white;
+        border: 1px solid var(--border);
+        color: var(--text-main);
+    }
+
+    .action-btn-primary:hover {
+        background: #F9FAFB;
+        border-color: #D1D5DB;
+        transform: translateX(4px); /* Subtle slide right effect */
+    }
+
+    .action-btn-danger {
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #B91C1C;
+    }
+
+    .action-btn-danger:hover {
+        background: #FEE2E2;
+        border-color: #FCA5A5;
+    }
+
+    /* Warning Alert */
+    .alert-box {
+        background: #FFF7ED; /* Light orange */
+        border: 1px solid #FFEDD5;
+        border-left: 4px solid var(--primary);
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .alert-icon {
+        font-size: 1.25rem;
+        color: var(--primary);
+    }
+
+    /* Badges */
+    .badge-custom {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .badge-admin { background: #E0E7FF; color: #4338CA; }
+    .badge-dev { background: #FFF4F2; color: #C2410C; }
+    .badge-user { background: #F3F4F6; color: #374151; }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .profile-summary {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .profile-summary-actions {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .btn-gradient-primary,
+        .btn-outline-primary {
+            padding: 8px 16px !important;
+            font-size: 0.9rem !important;
+        }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-width-container">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mt-4 mb-2">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Beranda</a></li>
+            <li class="breadcrumb-item active">Profil</li>
+        </ol>
+    </nav>
+
+    <div class="profile-section-header">
+        <h1>Profil Pengguna</h1>
+        <p>Kelola informasi akun, keamanan, dan preferensi Anda.</p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show border-0 d-flex align-items-center" role="alert" style="background-color: {{ '#FEF2F2' if category == 'error' else '#D1FAE5' }}; color: {{ '#991B1B' if category == 'error' else '#065F46' }};">
+                    <i class="bi bi-{{ 'exclamation-triangle-fill' if category == 'error' else 'check-circle-fill' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Profile Summary (Avatar) -->
+    <div class="profile-summary">
+        <div class="user-avatar-lg">
+            {% if user.role == 'developer' and user.profile_photo %}
+                <img src="{{ url_for('static', filename='uploads/profiles/' + user.profile_photo) }}" alt="{{ user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% elif user.avatar_type and user.role == 'user' %}
+                {{ user.avatar_type }}
+            {% else %}
+                {{ user.username[0]|upper }}
+            {% endif %}
+        </div>
+        <div class="profile-summary-info">
+            <h3>{{ user.username }}</h3>
+            <p>{{ user.email }}</p>
+            <div>
+                {% if user.role == 'admin' %}
+                    <span class="badge-custom badge-admin">Administrator</span>
+                {% elif user.role == 'developer' %}
+                    <span class="badge-custom badge-dev">Developer</span>
+                    {% if not user.is_approved %}
+                        <span class="badge bg-warning text-dark ms-1" style="font-size: 0.7rem; text-transform: none;">Menunggu Approval</span>
+                    {% else %}
+                        <span class="badge bg-success text-dark ms-1" style="font-size: 0.7rem; text-transform: none;">Terverifikasi</span>
+                    {% endif %}
+                {% else %}
+                    <span class="badge-custom badge-user">Pengguna Biasa</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="profile-summary-actions">
+            <a href="{{ url_for('edit_profile') }}" class="btn btn-gradient-primary">
+                <i class="bi bi-pencil-fill me-2"></i>Edit Profil
+            </a>
+            {% if user.role == 'developer' and user.is_approved %}
+                <a href="{{ url_for('developer_profile', developer_id=user.id) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-eye me-2"></i>Lihat Profil Publik
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Temp Password Warning -->
+    {% if user.is_temp_password %}
+    <div class="alert-box mb-4">
+        <div class="alert-icon">
+            <i class="bi bi-exclamation-circle-fill"></i>
+        </div>
+        <div>
+            <h6 class="fw-bold mb-1" style="color: #C2410C;">Password Sementara Aktif</h6>
+            <p class="mb-0 text-muted small">Anda masih menggunakan password default yang diberikan oleh admin. Segera ubah password untuk menjaga keamanan akun Anda.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Left Column: Details -->
+        <div class="col-md-8">
+            <!-- Informasi Akun -->
+            <div class="profile-card">
+                <h5 class="card-title">
+                    <i class="bi bi-person-vcard text-primary"></i> Detail Akun
+                </h5>
+                
+                <div class="info-row">
+                    <span class="info-label">Username</span>
+                    <span class="info-value">{{ user.username }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ user.email }}</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Bergabung Sejak</span>
+                    <span class="info-value">{{ user.created_at.strftime('%d %B %Y') }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">ID Pengguna</span>
+                    <span class="info-value font-mono text-muted small">#{{ user.id }}</span>
+                </div>
+            </div>
+
+            <!-- Security Tip Box -->
+            <div style="background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                <div class="d-flex gap-3">
+                    <i class="bi bi-shield-check text-primary fs-4"></i>
+                    <div>
+                        <h6 class="fw-bold text-primary mb-1">Tips Keamanan</h6>
+                        <p class="small text-muted mb-0">Gunakan password minimal 8 karakter dengan kombinasi huruf besar, angka, dan simbol. Jangan pernah membagikan password Anda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Actions -->
+        <div class="col-md-4">
+            <!-- Keamanan -->
+            <div class="profile-card">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-shield-lock text-primary"></i> Keamanan
+                </h5>
+                
+                <a href="{{ url_for('change_password') }}" class="action-btn action-btn-primary">
+                    <i class="bi bi-key text-muted"></i> Ubah Password
+                </a>
+                
+                <a href="{{ url_for('change_email') }}" class="action-btn action-btn-primary">
+                    <i class="bi bi-envelope text-muted"></i> Ubah Email
+                </a>
+            </div>
+
+            <!-- Akun -->
+            <div class="profile-card">
+                <h5 class="card-title mb-3">
+                    <i class="bi bi-gear text-primary"></i> Akun
+                </h5>
+                
+                <a href="{{ url_for('index') }}" class="action-btn action-btn-primary">
+                    <i class="bi bi-house text-muted"></i> Kembali ke Beranda
+                </a>
+                
+                <a href="{{ url_for('logout') }}" class="action-btn action-btn-primary">
+                    <i class="bi bi-box-arrow-right text-muted"></i> Logout
+                </a>
+                
+                <hr style="border-color: #f3f4f6; margin: 16px 0;">
+                
+                <a href="{{ url_for('delete_account_request') }}" class="action-btn action-btn-danger">
+                    <i class="bi bi-trash"></i> Hapus Akun
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

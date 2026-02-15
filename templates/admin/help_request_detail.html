@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block title %}Detail Permintaan Bantuan - Haisen Official{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-wrapper {
+        min-height: calc(100vh - 68px - 100px);
+        padding: 20px;
+    }
+
+    .detail-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: var(--shadow-sm);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .detail-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: var(--bg-body);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 500;
+    }
+
+    .back-btn:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .detail-section {
+        margin-bottom: 24px;
+    }
+
+    .detail-section h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .detail-section h4 i {
+        color: var(--primary);
+    }
+
+    .detail-info {
+        background: var(--bg-body);
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary);
+    }
+
+    .detail-info p {
+        margin: 8px 0;
+        color: var(--text-main);
+    }
+
+    .detail-info p:last-child {
+        margin-bottom: 0;
+    }
+
+    .detail-info strong {
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .status-pending { background: #fef3c7; color: #d97706; }
+    .status-in_progress { background: #dbeafe; color: #2563eb; }
+    .status-resolved { background: #d1fae5; color: #059669; }
+    .status-closed { background: #f3f4f6; color: #6b7280; }
+
+    .message-box {
+        background: var(--bg-body);
+        padding: 16px;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary);
+    }
+
+    .message-box p {
+        margin: 0;
+        color: var(--text-main);
+        line-height: 1.6;
+    }
+
+    .admin-response-box {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .admin-response-box h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0369a1;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .admin-response-box p {
+        margin: 8px 0;
+        color: #075985;
+        line-height: 1.6;
+    }
+
+    .admin-response-box p:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-danger {
+        background: #ef4444;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #dc2626;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-select, .form-control, textarea.form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .form-select:focus, .form-control:focus, textarea.form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+    <div class="detail-card">
+        <div class="detail-header">
+            <h2>Detail Permintaan Bantuan</h2>
+            <a href="{{ url_for('admin_help_requests') }}" class="back-btn">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
+
+        <!-- Request Info -->
+        <div class="detail-section">
+            <h4><i class="bi bi-person"></i> Informasi Pengirim</h4>
+            <div class="detail-info">
+                <p><strong>Nama:</strong> {{ help_request.name }}</p>
+                <p><strong>Email:</strong> <a href="mailto:{{ help_request.email }}">{{ help_request.email }}</a></p>
+                <p><strong>ID Permohonan:</strong> #{{ help_request.id }}</p>
+                <p><strong>Tanggal:</strong> {{ help_request.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+            </div>
+        </div>
+
+        <!-- Issue Info -->
+        <div class="detail-section">
+            <h4><i class="bi bi-exclamation-triangle"></i> Jenis Masalah</h4>
+            <div class="detail-info">
+                <p><strong>Jenis Masalah:</strong> {{ help_request.issue_description }}</p>
+                <p>
+                    <strong>Status:</strong> 
+                    <span class="status-badge status-{{ help_request.status }}">
+                        {{ help_request.status|replace('_', ' ')|title }}
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Message -->
+        <div class="detail-section">
+            <h4><i class="bi bi-chat-text"></i> Pesan</h4>
+            <div class="message-box">
+                <p>{{ help_request.message }}</p>
+            </div>
+        </div>
+
+        <!-- Admin Response -->
+        {% if help_request.admin_response %}
+        <div class="detail-section">
+            <div class="admin-response-box">
+                <h5><i class="bi bi-reply"></i> Respons Admin</h5>
+                <p>{{ help_request.admin_response }}</p>
+                {% if help_request.response_at %}
+                <p style="font-size: 0.85rem; color: #6b7280; margin-top: 12px;">
+                    <strong>Direpons pada:</strong> {{ help_request.response_at.strftime('%d %B %Y, %H:%M') }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Update Form -->
+        <div class="detail-section">
+            <form method="POST" action="{{ url_for('admin_update_help_request_status', request_id=help_request.id) }}">
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="pending" {% if help_request.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="in_progress" {% if help_request.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                        <option value="resolved" {% if help_request.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                        <option value="closed" {% if help_request.status == 'closed' %}selected{% endif %}>Closed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Respons Admin</label>
+                    <textarea name="admin_response" class="form-control" placeholder="Tulis respons untuk pengguna...">{{ help_request.admin_response or '' }}</textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-2"></i> Simpan
+                    </button>
+                    <a href="{{ url_for('admin_help_requests') }}" class="btn btn-secondary">
+                        <i class="bi bi-x-lg me-2"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Delete Button -->
+        <div class="detail-section">
+            <form method="POST" action="{{ url_for('admin_delete_help_request', request_id=help_request.id) }}" style="display: inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus permohonan bantuan ini?');">
+                    <i class="bi bi-trash me-2"></i> Hapus Permohonan
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
